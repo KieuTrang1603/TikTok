@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/admin_panel"
+            android:icon="@drawable/ic_admin_panel"
+            android:title="@string/admin_panel"
+            android:visible="false" />
+        <item
+            android:id="@+id/edit_profile"
+            android:icon="@drawable/ic_edit"
+            android:title="@string/edit_profile" />
+        <item
+            android:id="@+id/change_password"
+            android:icon="@drawable/ic_baseline_lock_24"
+            android:title="@string/change_password" />
+        <item
+            android:id="@+id/log_out"
+            android:icon="@drawable/ic_login"
+            android:title="@string/logout" />
+    </group>
+</menu>
