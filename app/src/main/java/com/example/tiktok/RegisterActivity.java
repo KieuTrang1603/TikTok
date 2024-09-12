@@ -38,8 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
-        //MyUtil.setLightStatusBar(this);
-//        apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
+        MyUtil.setLightStatusBar(this);
         //tạo nhưng ẩn đi
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.input_fragment, inputAccountRegister, InputAccountRegister.TAG).hide(inputAccountRegister)

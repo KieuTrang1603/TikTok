@@ -34,6 +34,13 @@ public interface ApiInterface {
             @Field("password") String password
     );
 
+    @FormUrlEncoded
+    @POST("/admin/api/users/login")
+    Call<Root<User>> login(
+            @Field("username") String username,
+            @Field("password") String password
+    );
+
     @POST("/user/api/video")
     Call<Root<Video>> addvideo(
             @Field("videoId") String videoId,
