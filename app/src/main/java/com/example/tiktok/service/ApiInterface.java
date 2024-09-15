@@ -41,6 +41,23 @@ public interface ApiInterface {
             @Field("password") String password
     );
 
+    @FormUrlEncoded
+    @POST("/admin/api/users/updateUser")
+    Call<Root<User>> updateUser(
+            @Field("userId") String userId,
+            @Field("fullName") String fullName,
+            @Field("email") String email,
+            @Field("phoneNumber") String phoneNumber
+    );
+
+    @FormUrlEncoded
+    @POST("/admin/api/users/updateUser")
+    Call<Root<User>> changePassword(
+            @Field("userId") String userId,
+            @Field("oldPassword") String oldPassword,
+            @Field("newPassword") String newPassword
+    );
+
     @POST("/user/api/video")
     Call<Root<Video>> addvideo(
             @Field("videoId") String videoId,

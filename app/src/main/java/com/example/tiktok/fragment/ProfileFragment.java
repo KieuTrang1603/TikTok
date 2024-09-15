@@ -2,6 +2,7 @@ package com.example.tiktok.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.tiktok.ChangePasswordActivity;
+import com.example.tiktok.EditProfileActivity;
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.R;
 import com.example.tiktok.models.User;
@@ -114,36 +117,48 @@ public class ProfileFragment extends Fragment {
 
         ic_menu.setOnClickListener(v -> drawer.open());
 
-        //ic_edit.setOnClickListener(v -> openEditProfileActivity());
+        ic_edit.setOnClickListener(v -> openEditProfileActivity());
 
         //ic_edit_avatar.setOnClickListener(v -> handleEditAvatar());
 
         navigationView.setNavigationItemSelectedListener(v -> {
-//            switch (v.getItemId()) {
+            switch (v.getItemId()) {
 //                case R.id.admin_panel:
 //                    openAdminActivity();
 //                    break;
-//                case R.id.edit_profile:
-//                    openEditProfileActivity();
-//                    break;
-//                case R.id.change_password:
-//                    openChangePasswordActivity();
-//                    break;
-//                case R.id.log_out:
-//                    MainActivity mainActivity = (MainActivity) requireActivity();
-//                    mainActivity.logOut();
-//                    Toast.makeText(context, "Log out successfully", Toast.LENGTH_SHORT).show();
-//                    break;
-//             }
+                case R.id.edit_profile:
+                    openEditProfileActivity();
+                    break;
+                case R.id.change_password:
+                    openChangePasswordActivity();
+                    break;
+                case R.id.log_out:
+                    MainActivity mainActivity = (MainActivity) requireActivity();
+                    mainActivity.logOut();
+                    Toast.makeText(context, "Log out successfully", Toast.LENGTH_SHORT).show();
+                    break;
+             }
 
             drawer.close();
             return false;
         });
-
 
         updateUI();
 
         return view;
     }
 
+    private void openChangePasswordActivity() {
+        Intent intent = new Intent(context, ChangePasswordActivity.class);
+        startActivity(intent);
+    }
+    private void openEditProfileActivity() {
+        Intent intent = new Intent(context, EditProfileActivity.class);
+        startActivity(intent);
+    }
+
+//    private void openAdminActivity() {
+//        Intent intent = new Intent(context, AdminActivity.class);
+//        startActivity(intent);
+//    }
 }

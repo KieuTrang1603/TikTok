@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
                     Log.d(TAG, "onResponse: " + response.body().data);
-                    if (response.message()=="Tài khoản không đúng") {
+                    if (response.message() !="Tài khoản không đúng") {
                         MyUtil.user_current = response.body().data;
                         intent.putExtra(USER, newUser);
                         setResult(RESULT_OK, intent);

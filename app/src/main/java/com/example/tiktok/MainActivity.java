@@ -232,4 +232,15 @@ public class MainActivity extends FragmentActivity {
             requestPermissions(new String[]{android.Manifest.permission.INTERNET}, 1);
 
     }
+
+    public void changeNavItem(int position) {
+        if (nav != null) {
+            nav.onMenuItemClick(position);
+        }
+    }
+
+    public void logOut() {
+        setCurrentUser(null);
+        changeNavItem(0);
+    }
 }
