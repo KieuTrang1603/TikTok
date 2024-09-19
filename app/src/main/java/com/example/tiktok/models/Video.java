@@ -17,13 +17,29 @@ public class Video implements Serializable {
 
     private String video_id, user_id, title, description, content, link_video;
     private int num_like, num_comments, num_views;
-    private String date_uploaded = MyUtil.dateTimeToString(new Date()); ;
+    //private String date_uploaded = MyUtil.dateTimeToString(new Date());
+    Date date_uploaded = new Date();
     private HashMap<String, Boolean> likes;
     private HashMap<String, Boolean> comments;
 
     public Video() {
         likes = new HashMap<>();
         comments = new HashMap<>();
+    }
+
+    public Video(String video_id, String user_id, HashMap<String, Boolean> comments, String description, String title, String content, String link_video, int num_like, int num_comments, int num_views, Date date_uploaded, HashMap<String, Boolean> likes) {
+        this.video_id = video_id;
+        this.user_id = user_id;
+        this.comments = comments;
+        this.description = description;
+        this.title = title;
+        this.content = content;
+        this.link_video = link_video;
+        this.num_like = num_like;
+        this.num_comments = num_comments;
+        this.num_views = num_views;
+        this.date_uploaded = date_uploaded;
+        this.likes = likes;
     }
 
     public String getVideo_id() {
@@ -98,11 +114,11 @@ public class Video implements Serializable {
         this.num_views = num_views;
     }
 
-    public String getDate_uploaded() {
+    public Date getDate_uploaded() {
         return date_uploaded;
     }
 
-    public void setDate_uploaded(String date_uploaded) {
+    public void setDate_uploaded(Date date_uploaded) {
         this.date_uploaded = date_uploaded;
     }
 

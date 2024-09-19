@@ -38,6 +38,8 @@ public class MainActivity extends FragmentActivity {
     private static final String TAG = "MainActivity", NAV_TAG = "Navigation";
     public static final int LOGIN_REQUEST_CODE = 1;
     public static final int REGISTER_REQUEST_CODE = 2;
+    public static final int REQUEST_CHANGE_AVATAR = 3;
+    public static final int REQUEST_ADD_VIDEO = 4;
     private static User currentUser;
 
     @SuppressLint("StaticFieldLeak")
