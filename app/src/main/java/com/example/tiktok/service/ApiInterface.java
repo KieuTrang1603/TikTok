@@ -2,14 +2,19 @@ package com.example.tiktok.service;
 
 import com.example.tiktok.models.Data;
 import com.example.tiktok.models.Root;
+import com.example.tiktok.models.UploadResponse;
 import com.example.tiktok.models.User;
 import com.example.tiktok.models.Video;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -42,7 +47,7 @@ public interface ApiInterface {
     );
 
     @FormUrlEncoded
-    @POST("/admin/api/users/updateUser")
+    @PUT("/admin/api/users/{userId}")
     Call<Root<User>> updateUser(
             @Field("userId") String userId,
             @Field("fullName") String fullName,
@@ -51,7 +56,7 @@ public interface ApiInterface {
     );
 
     @FormUrlEncoded
-    @POST("/admin/api/users/updateUser")
+    @PUT("/admin/api/users/{userId}")
     Call<Root<User>> changePassword(
             @Field("userId") String userId,
             @Field("oldPassword") String oldPassword,
@@ -70,4 +75,7 @@ public interface ApiInterface {
             @Field("userID") String useID,
             @Field("follow") Boolean follow
     );
+    @Multipart
+    @POST("api/file/video/single")
+    Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
 }

@@ -1,18 +1,29 @@
 package com.example.tiktok.fragment;
 
+import static android.app.Activity.RESULT_OK;
+import static com.example.tiktok.MainActivity.REQUEST_ADD_VIDEO;
+import static com.example.tiktok.MainActivity.REQUEST_CHANGE_AVATAR;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +38,27 @@ import com.example.tiktok.ChangePasswordActivity;
 import com.example.tiktok.EditProfileActivity;
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.R;
+import com.example.tiktok.models.Root;
+import com.example.tiktok.models.UploadResponse;
 import com.example.tiktok.models.User;
+import com.example.tiktok.service.ApiInterface;
+import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.MyUtil;
 import com.google.android.material.navigation.NavigationView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class ProfileFragment extends Fragment {
@@ -43,6 +72,7 @@ public class ProfileFragment extends Fragment {
     ConstraintLayout layoutProfile;
     NavigationView navigationView;
     EditText edt_video_content;
+    final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     Uri videoUri;
 
@@ -111,7 +141,7 @@ public class ProfileFragment extends Fragment {
         edt_video_content = view.findViewById(R.id.edt_video_content);
         ic_add_video = view.findViewById(R.id.ic_add_video);
 
-        //ic_add_video.setOnClickListener(v -> handleAddVideo());
+        ic_add_video.setOnClickListener(v -> handleAddVideo());
 
         //txt_post_video.setOnClickListener(v -> handlePostVideo());
 
@@ -119,7 +149,7 @@ public class ProfileFragment extends Fragment {
 
         ic_edit.setOnClickListener(v -> openEditProfileActivity());
 
-        //ic_edit_avatar.setOnClickListener(v -> handleEditAvatar());
+        ic_edit_avatar.setOnClickListener(v -> handleEditAvatar());
 
         navigationView.setNavigationItemSelectedListener(v -> {
             switch (v.getItemId()) {
@@ -137,7 +167,7 @@ public class ProfileFragment extends Fragment {
                     mainActivity.logOut();
                     Toast.makeText(context, "Log out successfully", Toast.LENGTH_SHORT).show();
                     break;
-             }
+            }
 
             drawer.close();
             return false;
@@ -152,6 +182,7 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(context, ChangePasswordActivity.class);
         startActivity(intent);
     }
+
     private void openEditProfileActivity() {
         Intent intent = new Intent(context, EditProfileActivity.class);
         startActivity(intent);
@@ -161,4 +192,105 @@ public class ProfileFragment extends Fragment {
 //        Intent intent = new Intent(context, AdminActivity.class);
 //        startActivity(intent);
 //    }
+
+    private void handleEditAvatar() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_CHANGE_AVATAR);
+    }
+
+    private void handleAddVideo() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("video/*");
+            startActivityForResult(intent, REQUEST_ADD_VIDEO);
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CHANGE_AVATAR && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+//            uploadImage(uri);
+        } else if (requestCode == REQUEST_ADD_VIDEO && resultCode == RESULT_OK && data != null) {
+            videoUri = data.getData();
+            try {
+                Glide.with(context).load(videoUri).into(ic_add_video);
+            } catch (Exception e) {
+                Log.w(TAG, "Glide error: " + e.getMessage());
+            }
+            uploadVideoToApi(videoUri);
+        }
+    }
+
+    public void uploadVideoToApi(Uri videoUri) {
+
+        // Khởi tạo API service
+//        ApiInterface apiService = retrofit.create(ApiService.class);
+
+        // Tạo File từ Uri
+        File file = null;
+        try {
+            file = getFileFromUri(videoUri); // Hàm getPathFromUri được giải thích bên dưới
+        } catch (Exception e) {
+
+        }
+        // Tạo RequestBody cho file
+        RequestBody requestFile = RequestBody.create(MediaType.parse("video/*"), file);
+
+        // Tạo MultipartBody.Part từ file
+        MultipartBody.Part body = MultipartBody.Part.createFormData("videoFile", requestFile.toString());
+
+        // Gọi API để upload video
+//        Call<UploadResponse> call = apitiktok.uploadVideo(body);
+        apitiktok.uploadVideo(body).enqueue(new Callback<UploadResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
+                Log.d(TAG, "Upload thành công: " + response.body());
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
+                Log.d(TAG, "Upload thất bại: " + t);
+            }
+        });
+//        call.enqueue(new Callback<UploadResponse>() {
+//            @Override
+//            public void onResponse(Call<UploadResponse> call, Response<UploadResponse> response) {
+//                if (response.isSuccessful()) {
+//                    // Xử lý khi upload thành công
+//                    Log.d(TAG, "Upload thành công: " + response.body().getMessage());
+//                } else {
+//                    Log.e(TAG, "Upload thất bại");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UploadResponse> call, Throwable t) {
+//                Log.e(TAG, "Lỗi khi upload: " + t.getMessage());
+//            }
+//        });
+    }
+
+    public File getFileFromUri(Uri contentUri) throws IOException, FileNotFoundException {
+        // Create a new file in the app's cache directory
+        File tempFile = new File(context.getCacheDir(), "temp_video_file.mp4");
+        tempFile.createNewFile();
+
+        // Try to copy the file content from the URI to the temporary file
+        try (InputStream inputStream = context.getContentResolver().openInputStream(contentUri);
+             OutputStream outputStream = new FileOutputStream(tempFile)) {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+        }
+
+        return tempFile;
+    }
 }
