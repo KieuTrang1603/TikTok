@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 import androidx.core.graphics.Insets;
@@ -104,7 +106,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
     public void updateUI() {
-        //VideoFragment.getInstance().updateUI();
+        VideoFragment.getInstance().updateUI();
         ProfileFragment.getInstance().updateUI();
         //NotificationFragment.getInstance().updateUI();
     }
@@ -119,6 +121,45 @@ public class MainActivity extends FragmentActivity {
     public void openRegisterActivity() {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivityForResult(intent, REGISTER_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == LOGIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    User user = (User) data.getSerializableExtra(LoginActivity.USER);
+                    setCurrentUser(user);
+                    changeNavItem(0);
+                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (data != null && data.getBooleanExtra(EXTRA_REGISTER, false)) {
+                    openRegisterActivity();
+                } else {
+                    Toast.makeText(this, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == REGISTER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    User user = (User) data.getSerializableExtra(RegisterActivity.USER);
+                    setCurrentUser(user);
+                    changeNavItem(0);
+                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (data != null && data.getBooleanExtra(EXTRA_LOGIN, false)) {
+                    openLoginActivity();
+                } else {
+                    Toast.makeText(this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == REQUEST_CHANGE_AVATAR || requestCode == REQUEST_ADD_VIDEO) {
+            // Don't do anything
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override

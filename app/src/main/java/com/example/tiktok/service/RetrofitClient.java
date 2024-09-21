@@ -23,7 +23,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static retrofit2.Retrofit instance;
-    static String baseUrl = "https://20dc-2402-800-6d3c-de9c-8833-39fb-b9b7-831b.ngrok-free.app";
+    static String baseUrl = "https://nodejs-mysql-1sml.onrender.com";
+//        static String baseUrl = "https://0022-2405-4803-ffb5-3220-59d2-c3d2-c63e-1335.ngrok-free.app";
     public static retrofit2.Retrofit getInstance(){
         if(instance == null){
             instance = new retrofit2.Retrofit.Builder()
@@ -34,6 +35,9 @@ public class RetrofitClient {
                     .build();
         }
         return instance;
+    }
+    public static String getBaseUrl() {
+        return baseUrl;
     }
     private static OkHttpClient getRetrofitClient() {
         OkHttpClient.Builder clientBuilder = getUnsafeOkHttpClient()

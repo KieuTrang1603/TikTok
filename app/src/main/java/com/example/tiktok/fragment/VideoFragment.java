@@ -59,48 +59,54 @@ public class VideoFragment extends Fragment {
 
         context = view.getContext();
 
-//        recyclerView = view.findViewById(R.id.recycler_view_videos);
-//        recyclerView.setHasFixedSize(true);
-//
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//
-//        recyclerView.setLayoutManager(linearLayoutManager);
-//
-//        loadVideos();
-//
-//        SnapHelper snapHelper = new PagerSnapHelper();
-//        snapHelper.attachToRecyclerView(recyclerView);
+        recyclerView = view.findViewById(R.id.recycler_view_videos);
+        recyclerView.setHasFixedSize(true);
 
-        // Inflate the layout for this fragment
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        loadVideos();
+
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerView);
+
+//         Inflate the layout for this fragment
         return view;
     }
 
-//    private void loadVideos() {
-//        apitiktok.loadvideo().enqueue(new Callback<Root<Data<Video>>>() {
-//            @Override
-//            public void onResponse(Call<Root<Data<Video>>> call, Response<Root<Data<Video>>> response) {
-//                List<Video> listVideos = new ArrayList<>();
-//                listVideos = (List<Video>) response.body();
-//                VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-//                if (adapter != null) {
-//                    adapter.setVideos(listVideos);
-//                } else {
-//                    adapter = new VideoFragmentAdapter(listVideos, context);
-//                    recyclerView.setAdapter(adapter);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Root<Data<Video>>> call, Throwable t) {
-//
-//            }
-//        });
-//}
+    private void loadVideos() {
+        apitiktok.getAllVideo(null,null, null, null).enqueue(new Callback<Root<Data<Video>>>() {
+            @Override
+            public void onResponse(Call<Root<Data<Video>>> call, Response<Root<Data<Video>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Video> listVideos =  response.body().data.content;
+                    VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+                    if (adapter != null) {
+                        adapter.setVideos(listVideos);
+                    } else {
+                        adapter = new VideoFragmentAdapter(listVideos, context);
+                        recyclerView.setAdapter(adapter);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Root<Data<Video>>> call, Throwable t) {
+                Log.e(TAG, "loadVideos: " + t.getMessage());
+            }
+        });
+}
     public void updateUI() {
         if (recyclerView.getAdapter() != null) {
             VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
             adapter.setVideos(adapter.getVideos());
+        }
+    }
+    public void pauseVideo() {
+        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+        if (adapter != null) {
+            adapter.pauseVideo();
         }
     }
 

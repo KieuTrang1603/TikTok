@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<Root<User>> call, Throwable t) {
                     Toast.makeText(LoginActivity.this, "Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập", Toast.LENGTH_SHORT).show();
                     password.setError("Vui lòng kiểm tra lại mật khẩu");
+                    Log.d("loi", t.getMessage());
                 }
             });
             }

@@ -4,37 +4,38 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.tiktok.MainActivity;
 import com.example.tiktok.utils.MyUtil;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class Video implements Serializable {
     // TAG
     public static final String TAG = "Video";
     public static final String VIDEO_ID = "videoId";
 
-    private String video_id, user_id, title, description, content, link_video;
+    private String video_id, user_id, content, fileName;
     private int num_like, num_comments, num_views;
     //private String date_uploaded = MyUtil.dateTimeToString(new Date());
     Date date_uploaded = new Date();
-    private HashMap<String, Boolean> likes;
-    private HashMap<String, Boolean> comments;
+    private List<String> likes;
+    private List<String> comments;
+    String username, avatar;
 
     public Video() {
-        likes = new HashMap<>();
-        comments = new HashMap<>();
+//        likes = new HashMap<>();
+//        comments = new HashMap<>();
     }
 
-    public Video(String video_id, String user_id, HashMap<String, Boolean> comments, String description, String title, String content, String link_video, int num_like, int num_comments, int num_views, Date date_uploaded, HashMap<String, Boolean> likes) {
+    public Video(String video_id, String user_id, List<String> comments, String content, String fileName, int num_like, int num_comments, int num_views, Date date_uploaded, List<String> likes) {
         this.video_id = video_id;
         this.user_id = user_id;
         this.comments = comments;
-        this.description = description;
-        this.title = title;
         this.content = content;
-        this.link_video = link_video;
+        this.fileName = fileName;
         this.num_like = num_like;
         this.num_comments = num_comments;
         this.num_views = num_views;
@@ -58,22 +59,6 @@ public class Video implements Serializable {
         this.user_id = user_id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getContent() {
         return content;
     }
@@ -82,12 +67,12 @@ public class Video implements Serializable {
         this.content = content;
     }
 
-    public String getLink_video() {
-        return link_video;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setLink_video(String link_video) {
-        this.link_video = link_video;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public int getNum_like() {
@@ -122,20 +107,36 @@ public class Video implements Serializable {
         this.date_uploaded = date_uploaded;
     }
 
-    public HashMap<String, Boolean> getLikes() {
+    public List<String> getLikes() {
         return likes;
     }
 
-    public void setLikes(HashMap<String, Boolean> likes) {
+    public void setLikes(List<String> likes) {
         this.likes = likes;
     }
 
-    public HashMap<String, Boolean> getComments() {
+    public List<String> getComments() {
         return comments;
     }
 
-    public void setComments(HashMap<String, Boolean> comments) {
+    public void setComments(List<String> comments) {
         this.comments = comments;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
@@ -143,17 +144,22 @@ public class Video implements Serializable {
         return "Video{" +
                 "video_id='" + video_id + '\'' +
                 ", user_id='" + user_id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
                 ", content='" + content + '\'' +
-                ", link_video='" + link_video + '\'' +
+                ", fileName='" + fileName + '\'' +
                 ", num_like=" + num_like +
                 ", num_comments=" + num_comments +
                 ", num_views=" + num_views +
                 ", date_uploaded='" + date_uploaded + '\'' +
                 ", likes=" + likes +
                 ", comments=" + comments +
+                ", username" + username +
+                ", avatar" + avatar +
                 '}';
+    }
+
+    // Like
+    public boolean isLiked() {
+        return likes != null && likes.contains(MainActivity.getCurrentUser().getUser_id());
     }
 }
 

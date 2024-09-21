@@ -1,6 +1,7 @@
 package com.example.tiktok.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -132,6 +133,7 @@ public class User implements Serializable {
     }
     public String toString() {
         return "User{" +
+                "user_id='" + user_id + '\'' +
                 "username='" + username + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
@@ -141,4 +143,16 @@ public class User implements Serializable {
                 '}';
     }
 
+    public boolean isFollowing(String user_id) {
+        return followings != null && followings.contains(user_id);
+    }
+
+    public void follow(String user_id) {
+        // Add to followings
+        if (followings == null) followings = new ArrayList<>();
+        followings.add(user_id);
+
+        // Update numFollowing
+        num_following++;
+    }
 }

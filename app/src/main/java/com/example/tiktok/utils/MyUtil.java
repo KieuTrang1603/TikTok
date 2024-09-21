@@ -1,10 +1,18 @@
 package com.example.tiktok.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 
+import com.example.tiktok.MainActivity;
+import com.example.tiktok.WatchProfileActivity;
+import com.example.tiktok.WatchVideoActivity;
 import com.example.tiktok.models.User;
+import com.example.tiktok.models.Video;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,5 +79,40 @@ public class MyUtil {
 
     public static Date stringToDate(String dateString) {
         return stringToDateFormat(dateString, YYYY_MM_DD);
+    }
+    // get number to text if large
+    @SuppressLint("DefaultLocale")
+    public static String getNumberToText(long number, int digit) {
+        if (number > 999 && number < 1000000) {
+            return String.format("%." + digit + "f", number / 1000.0) + "k";
+        } else if (number > 999999) {
+            return String.format("%." + digit + "f", number / 1000000.0) + "m";
+        } else {
+            return String.valueOf(number);
+        }
+    }
+    public static void goToUser(Context context, String user_id) {
+        if (context instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) context;
+            if (MainActivity.getCurrentUser().getUser_id().equals(user_id)) {
+                mainActivity.changeNavItem(3);
+            } else {
+                Intent intent = new Intent(mainActivity, WatchProfileActivity.class);
+                Log.d("forward to profile ", user_id);
+                intent.putExtra(User.TAG, user_id);
+                mainActivity.startActivity(intent);
+            }
+        } else {
+            Intent intent = new Intent(context, WatchProfileActivity.class);
+            Log.d("forward to profile ", user_id);
+            intent.putExtra(User.TAG, user_id);
+            context.startActivity(intent);
+        }
+    }
+
+    public static void goToVideo(Activity activity, String videoId) {
+        Intent intent = new Intent(activity, WatchVideoActivity.class);
+        intent.putExtra(Video.VIDEO_ID, videoId);
+        activity.startActivity(intent);
     }
 }
