@@ -98,10 +98,10 @@ public class VideoFragment extends Fragment {
 //        });
 //}
     public void updateUI() {
-        if (recyclerView.getAdapter() != null) {
-            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-            adapter.setVideos(adapter.getVideos());
-        }
+//        if (recyclerView.getAdapter() != null) {
+//            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+//            adapter.setVideos(adapter.getVideos());
+//        }
     }
 
 }

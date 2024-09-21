@@ -215,11 +215,7 @@ public class ProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CHANGE_AVATAR && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-<<<<<<< HEAD
             uploadImage(uri);
-=======
-//            uploadImage(uri);
->>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
         } else if (requestCode == REQUEST_ADD_VIDEO && resultCode == RESULT_OK && data != null) {
             videoUri = data.getData();
             try {
@@ -243,34 +239,22 @@ public class ProfileFragment extends Fragment {
         } catch (Exception e) {
 
         }
-<<<<<<< HEAD
 
         if (file == null) {
             Log.e(TAG, "File tạo không thành công");
             return;
         }
-=======
->>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
         // Tạo RequestBody cho file
         RequestBody requestFile = RequestBody.create(MediaType.parse("video/*"), file);
 
         // Tạo MultipartBody.Part từ file
-<<<<<<< HEAD
         MultipartBody.Part body = MultipartBody.Part.createFormData("videoFile", file.getName(), requestFile);
 
-=======
-        MultipartBody.Part body = MultipartBody.Part.createFormData(
-                "videoFile",
-                file.getName(),
-                requestFile
-        );
->>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
         // Gọi API để upload video
 //        Call<UploadResponse> call = apitiktok.uploadVideo(body);
         apitiktok.uploadVideo(body).enqueue(new Callback<UploadResponse>() {
             @Override
             public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
-<<<<<<< HEAD
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Upload thành công: " + response.body());
                 } else {
@@ -280,9 +264,7 @@ public class ProfileFragment extends Fragment {
                         throw new RuntimeException(e);
                     }
                 }
-=======
                 Log.d(TAG, "Upload thành công: " + response.body());
->>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
             }
 
             @Override
@@ -325,7 +307,6 @@ public class ProfileFragment extends Fragment {
 
         return tempFile;
     }
-<<<<<<< HEAD
     public void uploadImage(Uri uri) {
 
         // Khởi tạo API service
@@ -366,6 +347,4 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-=======
->>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
 }
