@@ -58,7 +58,11 @@ public interface ApiInterface {
     );
 
     @FormUrlEncoded
+<<<<<<< HEAD
     @PUT("/admin/api/users/{userId}") //cap nhat thong tin user
+=======
+    @PUT("/admin/api/users/{userId}")
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
     Call<Root<User>> updateUser(
             @Field("userId") String userId,
             @Field("fullName") String fullName,
@@ -67,8 +71,13 @@ public interface ApiInterface {
     );
 
     @FormUrlEncoded
+<<<<<<< HEAD
     @PUT("/admin/api/users/change-password/{userId}")
     Call<Root<User>> changePassword(//loi code:400, data, message: "tai khong hoac mk cu khong dung"
+=======
+    @PUT("/admin/api/users/{userId}")
+    Call<Root<User>> changePassword(
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
             @Field("userId") String userId,
             @Field("oldPassword") String oldPassword,
             @Field("newPassword") String newPassword
@@ -87,6 +96,7 @@ public interface ApiInterface {
             @Field("user_id") String user_id, //id tai khoan hien tai
             @Field("isFollow") String isFollow // trang thai follow, truyen true: muon follow, false: bo follow
     );
+<<<<<<< HEAD
     @Multipart
     @POST("api/file/video/single")
     Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
@@ -103,4 +113,10 @@ public interface ApiInterface {
 //            @Query("fileName") String fileName
 //    );?piadsf/asdf/a/dsf/
 //    url="https://nodejs-mysql-1sml.onrender.com/api/file/video/view?fileName=da9c9c41-83f8-4854-a052-ea4f1b44582b.mp4"
+=======
+
+    @Multipart
+    @POST("api/file/video/single")
+    Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
 }

@@ -1,17 +1,25 @@
 package com.example.tiktok.adapters;
 
 import android.content.Context;
+<<<<<<< HEAD
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
+=======
+import android.view.View;
+import android.view.ViewGroup;
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+<<<<<<< HEAD
 import com.example.tiktok.R;
+=======
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
 import com.example.tiktok.models.Video;
 import com.example.tiktok.utils.RecyclerViewDisabler;
 
@@ -34,6 +42,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         this.context = context;
     }
 
+<<<<<<< HEAD
     //được gọi lai khi mo window
     @Override
     public void onViewAttachedToWindow(@NonNull VideoViewHolder holder) {
@@ -46,6 +55,12 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         View view = inflater.inflate(R.layout.video_layout, parent, false);
 
         return new VideoViewHolder(view);
+=======
+    @NonNull
+    @Override
+    public VideoFragmentAdapter.VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return null;
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
     }
 
     @Override
@@ -55,6 +70,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
 
     @Override
     public int getItemCount() {
+<<<<<<< HEAD
         return videos.size();
     }
     public List<Video> getVideos() {
@@ -99,6 +115,14 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
             img_follow = itemView.findViewById(R.id.img_follow);
             img_avatar = itemView.findViewById(R.id.img_avatar);
             img_share = itemView.findViewById(R.id.img_share);
+=======
+        return 0;
+    }
+
+    public class VideoViewHolder extends RecyclerView.ViewHolder {
+        public VideoViewHolder(@NonNull View itemView) {
+            super(itemView);
+>>>>>>> 4941626fbe9ef82cf6b0013c8719f39c9fbe436a
         }
     }
 }
