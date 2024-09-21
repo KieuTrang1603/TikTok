@@ -57,4 +57,6 @@ dependencies {
     // Other dependencies
     implementation ("com.mikhaellopez:circularimageview:4.3.0")
     implementation ("np.com.susanthapa:curved_bottom_navigation:0.6.5")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation ("com.squareup.okhttp3:okhttp-urlconnection:4.9.1")
 }

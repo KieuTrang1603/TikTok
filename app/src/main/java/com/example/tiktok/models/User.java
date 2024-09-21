@@ -2,6 +2,7 @@ package com.example.tiktok.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 public class User implements Serializable {
     public static final String ROLE_ADMIN = "admin";
@@ -11,9 +12,9 @@ public class User implements Serializable {
 
     private String user_id,username, fullName, phoneNumber, email,password, avatar, role;
     private int num_followers, num_following, num_like;
-    private HashMap<String, Boolean> followings, followers;
+    private List<String> followings, followers;
 
-    public User(String username, String fullName, String phoneNumber, String email,String password, String avatar, String user_id, int num_followers, int num_following, int num_like, HashMap<String, Boolean> followings, HashMap<String, Boolean> followers) {
+    public User(String username, String fullName, String phoneNumber, String email,String password, String avatar, String user_id, int num_followers, int num_following, int num_like, List<String> followings, List<String> followers) {
         this.username = username;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
@@ -110,15 +111,15 @@ public class User implements Serializable {
         this.num_like = num_like;
     }
 
-    public HashMap<String, Boolean> getFollowings() {
+    public List<String> getFollowings() {
         return followings;
     }
 
-    public void setFollowings(HashMap<String, Boolean> followings) {
+    public void setFollowings(List<String> followings) {
         this.followings = followings;
     }
 
-    public HashMap<String, Boolean> getFollowers() {
+    public List<String> getFollowers() {
         return followers;
     }
 
@@ -126,7 +127,7 @@ public class User implements Serializable {
         return role.equals(ROLE_ADMIN);
     }
 
-    public void setFollowers(HashMap<String, Boolean> followers) {
+    public void setFollowers(List<String> followers) {
         this.followers = followers;
     }
     public String toString() {

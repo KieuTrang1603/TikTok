@@ -243,8 +243,11 @@ public class ProfileFragment extends Fragment {
         RequestBody requestFile = RequestBody.create(MediaType.parse("video/*"), file);
 
         // Tạo MultipartBody.Part từ file
-        MultipartBody.Part body = MultipartBody.Part.createFormData("videoFile", requestFile.toString());
-
+        MultipartBody.Part body = MultipartBody.Part.createFormData(
+                "videoFile",
+                file.getName(),
+                requestFile
+        );
         // Gọi API để upload video
 //        Call<UploadResponse> call = apitiktok.uploadVideo(body);
         apitiktok.uploadVideo(body).enqueue(new Callback<UploadResponse>() {

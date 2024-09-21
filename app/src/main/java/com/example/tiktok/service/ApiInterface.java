@@ -75,6 +75,7 @@ public interface ApiInterface {
             @Field("userID") String useID,
             @Field("follow") Boolean follow
     );
+
     @Multipart
     @POST("api/file/video/single")
     Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
