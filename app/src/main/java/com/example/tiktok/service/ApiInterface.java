@@ -2,6 +2,7 @@ package com.example.tiktok.service;
 
 import androidx.annotation.Nullable;
 
+import com.example.tiktok.models.Comment;
 import com.example.tiktok.models.Data;
 import com.example.tiktok.models.Root;
 import com.example.tiktok.models.UploadResponse;
@@ -33,14 +34,13 @@ public interface ApiInterface {
     @GET("/api/user/search")
     Call<Root<Data<User>>> search(
             @Query("keyword") String keyword,
-            @Query("pageIndex") String pageIndex,
-            @Query("pageSize") String pageSize
+            @Query("pageIndex") @Nullable String pageIndex,
+            @Query("pageSize") @Nullable String pageSize
     );
 
-    @GET("/api/user/search")
-    Call<Root<Data<User>>> getByIdUser(
-            @Query("user_id") String user_id,
-            @Query("active_id") String active_id
+    @GET("/api/users/{user_id}")
+    Call<Root<User>> getByIdUser(
+            @Path("user_id") String user_id
     );
 
     @FormUrlEncoded
@@ -63,16 +63,24 @@ public interface ApiInterface {
     @FormUrlEncoded
     @PUT("/api/users/{userId}") //cap nhat thong tin user
     Call<Root<User>> updateUser(
-            @Field("userId") String userId,
+            @Path("userId") String userId,
             @Field("fullName") String fullName,
             @Field("email") String email,
-            @Field("phoneNumber") String phoneNumber
+            @Field("phoneNumber") String phoneNumber,
+            @Field("avatar") String avatar
+    );
+
+    @FormUrlEncoded
+    @PUT("/api/users/avatar/{userId}") //cap nhat thong tin user
+    Call<Root<User>> updateUserAvatar(
+            @Path("userId") String userId,
+            @Field("avatar") String avatar
     );
 
     @FormUrlEncoded
     @PUT("/api/users/change-password/{userId}")
     Call<Root<User>> changePassword(//loi code:400, data, message: "tai khong hoac mk cu khong dung"
-            @Field("userId") String userId,
+            @Path("userId") String userId,
             @Field("oldPassword") String oldPassword,
             @Field("newPassword") String newPassword
     );
@@ -82,6 +90,11 @@ public interface ApiInterface {
     Call<Root<Video>> addvideo( //them moi video, fileName duoc lay khi upload video va api tra ra fileName
             @Field("content") String content,
             @Field("fileName") String fileName,
+            @Field("user_id") String user_id
+    );
+
+    @POST("/api/videos")
+    Call<Root<Video>> deletevideo(
             @Field("user_id") String user_id
     );
 
@@ -98,18 +111,19 @@ public interface ApiInterface {
             @Query("pageSize") @Nullable String pageSize
     );
 
-    @POST("/user/api/follow")
+    @FormUrlEncoded
+    @PUT("/api/users/follow")
     Call<Root<User>> follow(
             @Field("following_id") String following_id, //id cua user dang muon follow or unfollow
-            @Field("user_id") String user_id, //id tai khoan hien tai
-            @Field("isFollow") Boolean isFollow // trang thai follow, truyen true: muon follow, false: bo follow
+            @Field("user_id") String user_id //id tai khoan hien tai
+//            @Field("isFollow") Boolean isFollow // trang thai follow, truyen true: muon follow, false: bo follow
     );
 
-    @POST("/video/api/like")
-    Call<Root<User>> like(
-            @Field("video_id") String video_id, //id cua video dang muon like or unlike
-            @Field("user_id") String user_id, //id tai khoan hien tai
-            @Field("isLike") Boolean isLike // trang thai like, truyen true: muon like, false: bo like
+    @FormUrlEncoded
+    @PUT("/api/videos/{video_id}/update-like")
+    Call<Root<Video>> like(
+            @Path("video_id") String video_id, //id cua video dang muon like or unlike
+            @Field("user_id") String user_id //id tai khoan hien tai
     );
 
     @GET("/api/user/search")
@@ -126,4 +140,20 @@ public interface ApiInterface {
     @Multipart
     @POST("api/file/video/single")
     Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
+
+    @FormUrlEncoded
+    @POST("/api/comment")
+    Call<Root<Comment>> addcomment(
+            @Field("user_id") String user_id, // du lieu la username, email
+            @Field("content") String content,
+            @Field("video_id") String video_id
+    );
+
+    @GET("/api/comment/search")
+    Call<Root<Data<Comment>>>getAllComment(
+            @Query("keyword") @Nullable String keyword,
+            @Query("video_id") @Nullable String video_id,
+            @Query("pageIndex") @Nullable String pageIndex,
+            @Query("pageSize") @Nullable String pageSize
+    );
 }

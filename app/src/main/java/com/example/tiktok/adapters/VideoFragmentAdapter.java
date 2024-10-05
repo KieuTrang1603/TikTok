@@ -82,19 +82,43 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         Video video = videos.get(position);
         holder.txt_username.setText(video.getUsername());
         holder.txt_content.setText(video.getContent());
-        String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + video.getAvatar();
-        try {
-            if (video.getAvatar() != null && !video.getAvatar().isEmpty()) {
-                Glide.with(context)
-                        .load(imgURL)
-                        .error(R.drawable.default_avatar)
-                        .into(holder.img_avatar);
-            }else
-                // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
-                holder.img_avatar.setImageResource(R.drawable.default_avatar);
-        } catch (Exception e) {
-            Log.w(TAG, "Glide error: " + e.getMessage());
-        }
+        apitiktok.getByIdUser(video.getUser_id()).enqueue(new Callback<Root<User>>() {
+            @Override
+            public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                User user = response.body().data;
+                String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+                try {
+                    if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                        Glide.with(context)
+                                .load(imgURL)
+                                .error(R.drawable.default_avatar)
+                                .into(holder.img_avatar);
+                    }else
+                        // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                        holder.img_avatar.setImageResource(R.drawable.default_avatar);
+                } catch (Exception e) {
+                    Log.w(TAG, "Glide error: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Root<User>> call, Throwable t) {
+                Log.d("Tai nguoi dung dang video that bai" , t.getMessage());
+            }
+        });
+//        String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + video.getAvatar();
+//        try {
+//            if (video.getAvatar() != null && !video.getAvatar().isEmpty()) {
+//                Glide.with(context)
+//                        .load(imgURL)
+//                        .error(R.drawable.default_avatar)
+//                        .into(holder.img_avatar);
+//            }else
+//                // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+//                holder.img_avatar.setImageResource(R.drawable.default_avatar);
+//        } catch (Exception e) {
+//            Log.w(TAG, "Glide error: " + e.getMessage());
+//        }
         // Xây dựng URL đầy đủ từ filename (đường dẫn tĩnh hoặc API trả về)
 //        String videoUrl = RetrofitClient.getBaseUrl() +"/api/file/video/view?fileName=" + video.getFileName();
 ////        String videoUrl = "https://www.youtube.com/watch?v=CaJxE-isE5s&ab_channel=NinhD%C6%B0%C6%A1ngStory";
@@ -176,7 +200,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
 
         // Set onClickListener for img_like
         holder.img_like.setOnClickListener(v ->
-                handleClickLike(video));
+                handleClickLike(holder, video));
 
         // Set onClickListener for img_follow
         holder.img_follow.setOnClickListener(v ->
@@ -202,8 +226,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
             Toast.makeText(context, "Bạn cần đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
         else {
             User user = MainActivity.getCurrentUser();
-            if (user.isFollowing(video.getUser_id())){
-                apitiktok.follow(video.getUser_id(),user.getUser_id(),false).enqueue(new Callback<Root<User>>() {
+                apitiktok.follow(video.getUser_id(),user.getUser_id()).enqueue(new Callback<Root<User>>() {
                     @Override
                     public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
                         Log.d("UnFollow thanh cong", response.message());
@@ -214,55 +237,60 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
                         Log.d("UnFollow that bai", t.getMessage());
                     }
                 });
-            }
-//                UserFirebase.unfollowUser(video.getUsername());
-            else{
-                apitiktok.follow(video.getUser_id(),user.getUser_id(),true).enqueue(new Callback<Root<User>>() {
-                    @Override
-                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-                        Log.d("Follow thanh cong", response.message());
-                    }
-
-                    @Override
-                    public void onFailure(Call<Root<User>> call, Throwable t) {
-                        Log.d("Follow that bai", t.getMessage());
-                    }
-                });
-            }
+//            }
+////                UserFirebase.unfollowUser(video.getUsername());
+//            else{
+//                apitiktok.follow(video.getUser_id(),user.getUser_id(),true).enqueue(new Callback<Root<User>>() {
+//                    @Override
+//                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+//                        Log.d("Follow thanh cong", response.message());
+//                        //goi api thong bao
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Root<User>> call, Throwable t) {
+//                        Log.d("Follow that bai", t.getMessage());
+//                    }
+//                });
+//            }
 //                UserFirebase.followUser(video.getUsername());
         }
     }
 
-    private void handleClickLike(Video video) {
+    private void handleClickLike(VideoViewHolder holder, Video video) {
         if (MainActivity.isLoggedIn()) {
             User user = MainActivity.getCurrentUser();
-            if (video.isLiked()){
-                apitiktok.like(video.getVideo_id(),user.getUser_id(),false).enqueue(new Callback<Root<User>>() {
+//            if (video.isLiked()){
+                apitiktok.like(video.getVideo_id(),user.getUser_id()).enqueue(new Callback<Root<Video>>() {
                     @Override
-                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-                        Log.d("unlike thanh cong", response.message());
+                    public void onResponse(Call<Root<Video>> call, Response<Root<Video>> response) {
+                        Log.d(" thanh cong", response.message());
+                        Video video1 = new Video();
+                        video1 = response.body().data;
+                        updateUI(holder,video1);
                     }
 
                     @Override
-                    public void onFailure(Call<Root<User>> call, Throwable t) {
-                        Log.d("unlike that bai", t.getMessage());
+                    public void onFailure(Call<Root<Video>> call, Throwable t) {
+                        Log.d(" that bai", t.getMessage());
                     }
                 });
-            }
-//                VideoFirebase.unlikeVideo(video);
-            else{
-                apitiktok.like(video.getVideo_id(),user.getUser_id(),true).enqueue(new Callback<Root<User>>() {
-                    @Override
-                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-                        Log.d("like thanh cong", response.message());
-                    }
-
-                    @Override
-                    public void onFailure(Call<Root<User>> call, Throwable t) {
-                        Log.d("like that bai", t.getMessage());
-                    }
-                });
-            }
+//            }
+////                VideoFirebase.unlikeVideo(video);
+//            else{
+//                apitiktok.like(video.getVideo_id(),user.getUser_id(),true).enqueue(new Callback<Root<User>>() {
+//                    @Override
+//                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+//                        Log.d("like thanh cong", response.message());
+//                        //goi api thong bao
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Root<User>> call, Throwable t) {
+//                        Log.d("like that bai", t.getMessage());
+//                    }
+//                });
+//            }
 //                VideoFirebase.likeVideo(video);
         } else
             Toast.makeText(context, "Bạn cần đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();

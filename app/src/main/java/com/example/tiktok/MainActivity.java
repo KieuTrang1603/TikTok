@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 import androidx.core.graphics.Insets;
@@ -20,14 +21,17 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.tiktok.adapters.VideoFragmentAdapter;
 import com.example.tiktok.fragment.NotLoginProfileFragment;
 import com.example.tiktok.fragment.NotificationFragment;
 import com.example.tiktok.fragment.ProfileFragment;
 import com.example.tiktok.fragment.SearchFragment;
 import com.example.tiktok.fragment.VideoFragment;
 import com.example.tiktok.models.User;
+import com.example.tiktok.utils.KeyboardUtil;
 import com.example.tiktok.utils.MyUtil;
 
 import kotlin.Unit;
@@ -235,7 +239,7 @@ public class MainActivity extends FragmentActivity {
                         .runOnCommit(() -> MyUtil.setLightStatusBar(this))
                         .hide(activeFragment).show(SearchFragment.getInstance())
                         .commit();
-                //VideoFragment.getInstance().pauseVideo();
+                VideoFragment.getInstance().pauseVideo();
                 Log.i(NAV_TAG, "Change to search fragment");
                 activeFragment = SearchFragment.getInstance();
                 break;
@@ -245,7 +249,7 @@ public class MainActivity extends FragmentActivity {
                         .hide(activeFragment).show(NotificationFragment.getInstance())
                         .commit();
                 activeFragment = NotificationFragment.getInstance();
-                //VideoFragment.getInstance().pauseVideo();
+                VideoFragment.getInstance().pauseVideo();
                 Log.i(NAV_TAG, "Change to notification fragment");
                 break;
             case R.drawable.ic_profile:
@@ -262,7 +266,7 @@ public class MainActivity extends FragmentActivity {
                             .commit();
                     activeFragment = NotLoginProfileFragment.getInstance();
                 }
-                //VideoFragment.getInstance().pauseVideo();
+                VideoFragment.getInstance().pauseVideo();
                 Log.i(NAV_TAG, "Change to profile fragment");
                 break;
         }
@@ -282,8 +286,35 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    public void hideCommentFragment() {
+        Log.i(TAG, "onBackPressed: HIDE KEYBOARD");
+        KeyboardUtil.hideKeyboard(this);
+        Log.i(TAG, "onBackPressed: HIDE LAYOUT_COMMENT");
+        findViewById(R.id.fragment_comment_container).setVisibility(View.GONE);
+
+        // Enable scroll
+        RecyclerView recycler_view_videos = findViewById(R.id.recycler_view_videos);
+        recycler_view_videos.removeOnItemTouchListener(VideoFragmentAdapter.disableTouchListener);
+    }
+
     public void logOut() {
         setCurrentUser(null);
         changeNavItem(0);
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.i(TAG, "onBackPressed: fragment_comment_container shown? " + (findViewById(R.id.fragment_comment_container) != null && findViewById(R.id.fragment_comment_container).getVisibility() == View.VISIBLE));
+        // Set onBackPressed when fragment_comment_container is showing
+        if (findViewById(R.id.fragment_comment_container) != null &&
+                findViewById(R.id.fragment_comment_container).getVisibility() == View.VISIBLE) {
+            hideCommentFragment();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.exit_confirm);
+            builder.setPositiveButton(R.string.yes, (dialog, which) -> finish());
+            builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
+            builder.show();
+        }
     }
 }

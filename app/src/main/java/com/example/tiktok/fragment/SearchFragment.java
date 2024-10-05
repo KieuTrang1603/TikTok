@@ -20,6 +20,9 @@ import android.widget.Toast;
 
 import com.example.tiktok.R;
 import com.example.tiktok.adapters.SearchFragmentAdapter;
+import com.example.tiktok.adapters.SearchNotFoundAdapter;
+import com.example.tiktok.models.Data;
+import com.example.tiktok.models.Root;
 import com.example.tiktok.models.User;
 import com.example.tiktok.models.Video;
 import com.example.tiktok.service.ApiInterface;
@@ -27,9 +30,14 @@ import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.MyUtil;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     public static final String TAG = "SearchFragment";
     private final ArrayList<User> users = new ArrayList<>();
@@ -63,7 +71,7 @@ public class SearchFragment extends Fragment {
         TextView txtSearch = view.findViewById(R.id.txtSearch);
         TextView lblAccount = view.findViewById(R.id.labelAccounts);
         TextView lblVideo = view.findViewById(R.id.labelVideos);
-        //set animation for scrollview
+//        set animation for scrollview
 //		scrollView.setAnimation();
         //handle click Search
         txtSearch.setOnClickListener(v -> {
@@ -94,7 +102,32 @@ public class SearchFragment extends Fragment {
                 lblAccount.setVisibility(View.GONE);
                 lblVideo.setVisibility(View.GONE);
 //                //search for user
-//                apitiktok.search()
+                apitiktok.search(query, null, null).enqueue(new Callback<Root<Data<User>>>() {
+                    @Override
+                    public void onResponse(Call<Root<Data<User>>> call, Response<Root<Data<User>>> response) {
+                        if(response.isSuccessful()){
+                            users.clear();
+                            List<User> listusers =  response.body().data.content;
+                            users.addAll(listusers);
+                            SearchFragmentAdapter searchFragmentAdapter = new SearchFragmentAdapter(users, view.getContext());
+                            if (recyclerView.getAdapter() == null && users.size() > 0) {
+                                recyclerView.setAdapter(searchFragmentAdapter);
+                                lblAccount.setVisibility(View.VISIBLE);
+                            }
+                            //search video
+                            if (users.size() == 0) {
+                                    Toast.makeText(view.getContext(), "No result", Toast.LENGTH_SHORT).show();
+                                    SearchNotFoundAdapter searchNotFoundAdapter = new SearchNotFoundAdapter(view.getContext(), query + " không cho ra kết quả tìm kiếm");
+                                    recyclerView.setAdapter(searchNotFoundAdapter);
+                                }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Root<Data<User>>> call, Throwable t) {
+                        Toast.makeText(view.getContext(), "No result", Toast.LENGTH_SHORT).show();
+                    }
+                });
 //                UserFirebase.getListUserLikeUsername(listUsers -> {
 //                    users.clear();
 //                    users.addAll(listUsers);
@@ -155,17 +188,17 @@ public class SearchFragment extends Fragment {
 
 
 
-//    @Override
-//    public boolean onQueryTextSubmit(String query) {
-//        System.out.println("onQueryTextSubmit: " + query);
-//        Log.d(TAG, "onQueryTextSubmit: " + query);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onQueryTextChange(String s) {
-//        System.out.println("onQueryTextChange: " + s);
-//        Log.d(TAG, "onQueryTextChange: " + s);
-//        return true;
-//    }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        System.out.println("onQueryTextSubmit: " + query);
+        Log.d(TAG, "onQueryTextSubmit: " + query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        System.out.println("onQueryTextChange: " + s);
+        Log.d(TAG, "onQueryTextChange: " + s);
+        return true;
+    }
 }

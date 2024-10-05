@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         MyUtil.user_current = response.body().data;
                         intent.putExtra(USER, newUser);
                         setResult(RESULT_OK, intent);
-                        startActivity(intent);
+//                        startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập", Toast.LENGTH_SHORT).show();

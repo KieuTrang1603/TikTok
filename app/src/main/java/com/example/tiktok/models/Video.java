@@ -152,8 +152,8 @@ public class Video implements Serializable {
                 ", date_uploaded='" + date_uploaded + '\'' +
                 ", likes=" + likes +
                 ", comments=" + comments +
-                ", username" + username +
-                ", avatar" + avatar +
+                ", username=" + username +
+                ", avatar=" + avatar +
                 '}';
     }
 

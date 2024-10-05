@@ -60,31 +60,17 @@ public class ChangePasswordActivity extends AppCompatActivity {
             apitiktok.changePassword(user.getUser_id(), oldPassword, newPassword).enqueue(new Callback<Root<User>>() {
                 @Override
                 public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-
+                    if(response.isSuccessful()){
+                        Toast.makeText(ChangePasswordActivity.this, "Cập nhật mật khẩu thành công", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<Root<User>> call, Throwable t) {
-
+                    Toast.makeText(ChangePasswordActivity.this, "Cập nhật mật khẩu thất bại! \n Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-//                assert email != null;
-//                AuthCredential credential = EmailAuthProvider.getCredential(email, oldPassword);
-//
-//                user.reauthenticate(credential).addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        user.updatePassword(newPassword).addOnCompleteListener(task1 -> {
-//                            if (!task1.isSuccessful()) {
-//                                Toast.makeText(ChangePasswordActivity.this, "Cập nhật mật khẩu thất bại! \n Lỗi: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                Toast.makeText(ChangePasswordActivity.this, "Cập nhật mật khẩu thành công", Toast.LENGTH_SHORT).show();
-//                                finish();
-//                            }
-//                        });
-//                    } else {
-//                        edtOldPassword.setError("Mật khẩu cũ không đúng!");
-//                    }
-//                });
             } else {
                 Toast.makeText(ChangePasswordActivity.this, "Không tìm thấy tài khoản", Toast.LENGTH_SHORT).show();
             }

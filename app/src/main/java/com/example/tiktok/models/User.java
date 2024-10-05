@@ -134,7 +134,7 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "user_id='" + user_id + '\'' +
-                "username='" + username + '\'' +
+                ", username='" + username + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +

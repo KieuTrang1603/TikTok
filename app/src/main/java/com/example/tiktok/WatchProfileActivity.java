@@ -59,8 +59,8 @@ public class WatchProfileActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Bundle extras = getIntent().getExtras();
-        String usernameText = extras.getString(User.TAG);
-        Log.d("WatchProfileActivity", "usernameText: " + usernameText);
+        String user_idText = extras.getString(User.TAG);
+        Log.d("WatchProfileActivity", "usernameText: " + user_idText);
 
         // Bind view
         fullname = findViewById(R.id.txt_fullname);
@@ -78,20 +78,55 @@ public class WatchProfileActivity extends AppCompatActivity {
         ic_back.setOnClickListener(v -> finish());
 
         txt_follow_status.setOnClickListener(v -> {
-            if (MainActivity.getCurrentUser().isFollowing(user.getUsername())) {
+//            if (MainActivity.getCurrentUser().isFollowing(user.getUser_id())) {
 //                UserFirebase.unfollowUser(user.getUsername());
-            } else {
-//                UserFirebase.followUser(user.getUsername());
+                apitiktok.follow(user.getUser_id(),MainActivity.getCurrentUser().getUser_id()).enqueue(new Callback<Root<User>>() {
+                    @Override
+                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                        Log.d("UnFollow thanh cong", response.message());
+                    }
 
-            }
+                    @Override
+                    public void onFailure(Call<Root<User>> call, Throwable t) {
+                        Log.d("UnFollow that bai", t.getMessage());
+                    }
+                });
+
+//            } else {
+////                UserFirebase.followUser(user.getUsername());
+//                apitiktok.follow(user.getUser_id(),MainActivity.getCurrentUser().getUser_id()).enqueue(new Callback<Root<User>>() {
+//                    @Override
+//                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+//                        Log.d("UnFollow thanh cong", response.message());
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Root<User>> call, Throwable t) {
+//                        Log.d("UnFollow that bai", t.getMessage());
+//                    }
+//                });
+//            }
         });
 
-        loadData(usernameText);
+        loadData(user_idText);
 
         MyUtil.setLightStatusBar(this);
     }
 
-    private void loadData(String usernameText) {
+    private void loadData(String user_idText) {
+        apitiktok.getByIdUser(user_idText).enqueue(new Callback<Root<User>>() {
+            @Override
+            public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show();
+                User user = response.body().data;
+                updateUI(user);
+            }
+
+            @Override
+            public void onFailure(Call<Root<User>> call, Throwable t) {
+                Log.e(TAG, "loadData: " + t.getMessage());
+            }
+        });
         // For first time load data
 //		query.get().addOnSuccessListener(snapshot -> {
 //			if (snapshot.exists()) {
@@ -120,10 +155,15 @@ public class WatchProfileActivity extends AppCompatActivity {
         else
             txt_follow_status.setVisibility(View.GONE);
         try {
-            Glide.with(context)
-                    .load(user.getAvatar())
-                    .error(R.drawable.default_avatar)
-                    .into(avatar);
+            String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                Glide.with(context)
+                        .load(imgURL)
+                        .error(R.drawable.default_avatar)
+                        .into(avatar);
+            }else
+                // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                avatar.setImageResource(R.drawable.default_avatar);
         } catch (Exception e) {
             Log.w(TAG, "Glide error: " + e.getMessage());
         }

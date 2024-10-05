@@ -1,15 +1,17 @@
 package com.example.tiktok.models;
 
+import com.example.tiktok.MainActivity;
 import com.example.tiktok.utils.MyUtil;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class Comment {
     public static final String TAG = "Comment";
     public static final String COMMENT_ID = "commentId";
 
-    private String comment_id, user_id, video_id, content, replyToCommentId;
+    private String comment_id, user_id, video_id, username, content, replyToCommentId;
     private int num_replies , num_like ;
     private String time = MyUtil.dateTimeToString(new Date());
     private HashMap<String, Boolean> replies;
@@ -55,6 +57,14 @@ public class Comment {
 
     public void setVideo_id(String video_id) {
         this.video_id = video_id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getContent() {
@@ -111,5 +121,27 @@ public class Comment {
 
     public void setLikes(HashMap<String, Boolean> likes) {
         this.likes = likes;
+    }
+
+    public boolean isValid() {
+        return content != null && !content.isEmpty() &&
+                username != null && !username.isEmpty();
+    }
+
+    public static void sortByTimeNewsest(List<Comment> comments) {
+        // Sort comments by time
+        comments.sort((o1, o2) -> {
+            Date time1 = MyUtil.stringToDateTime(o1.getTime());
+            Date time2 = MyUtil.stringToDateTime(o2.getTime());
+            if (time1 != null && time2 != null) {
+                return time2.compareTo(time1);
+            }
+            return 0;
+        });
+    }
+
+    public boolean isLiked() {
+        return likes != null && MainActivity.getCurrentUser() != null
+                && likes.containsKey(MainActivity.getCurrentUser().getUser_id());
     }
 }

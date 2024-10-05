@@ -98,15 +98,23 @@ public class VideoFragment extends Fragment {
         });
 }
     public void updateUI() {
-//        if (recyclerView.getAdapter() != null) {
-//            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-//            adapter.setVideos(adapter.getVideos());
-//        }
+        if (recyclerView.getAdapter() != null) {
+            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+            adapter.setVideos(adapter.getVideos());
+        }
     }
     public void pauseVideo() {
         VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
         if (adapter != null) {
             adapter.pauseVideo();
+        }
+    }
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            // Fragment đang hiển thị trở lại, cập nhật giao diện hoặc tải lại dữ liệu
+            updateUI(); // Hoặc loadVideos() nếu cần
         }
     }
 

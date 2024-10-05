@@ -13,10 +13,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -84,6 +86,7 @@ public class ProfileFragment extends Fragment {
     final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     Uri videoUri;
+//    Uri imgUri;
 
     private static final ProfileFragment instance = new ProfileFragment();
 
@@ -106,8 +109,8 @@ public class ProfileFragment extends Fragment {
             num_like.setText(user.getNum_like() + "");
             username.setText(user.getUsername());
             try {
-                String avatarUrl = user.getAvatar();
-                if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                String avatarUrl = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+                if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                     Glide.with(context)
                             .load(avatarUrl)
                             .error(R.drawable.default_avatar)
@@ -153,6 +156,10 @@ public class ProfileFragment extends Fragment {
                 Log.e("Load loi", t.getMessage());
             }
         });
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -226,7 +233,7 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(context, EditProfileActivity.class);
         startActivity(intent);
     }
-
+//   mo trang admin
 //    private void openAdminActivity() {
 //        Intent intent = new Intent(context, AdminActivity.class);
 //        startActivity(intent);
@@ -253,7 +260,7 @@ public class ProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CHANGE_AVATAR && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
+            Uri uri= data.getData();
             uploadImage(uri);
         } else if (requestCode == REQUEST_ADD_VIDEO && resultCode == RESULT_OK && data != null) {
             videoUri = data.getData();
@@ -292,9 +299,7 @@ public class ProfileFragment extends Fragment {
             public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
                 if (response.isSuccessful()) {
 //                    Log.e(TAG, "Upload thành công111111: " + response.body());
-//                    Log.e(TAG,"Upload thành công222222222222222222222222222222:"+response.body().getData());
                     video.setFileName(response.body().getData());
-//                    video.setFileName("2f07e934-882f-4489-a6c8-3937448f534f.mp4");
 //                    Log.e(TAG, video.getFileName());
                 } else {
                     try {
@@ -331,12 +336,28 @@ public class ProfileFragment extends Fragment {
 
         return tempFile;
     }
-    public void uploadImage(Uri uri) {
+    public File getFileFromUriImgae(Uri contentUri) throws IOException, FileNotFoundException {
+        // Create a new file in the app's cache directory
+        File tempFile = new File(context.getCacheDir(),"temp_Image.jpg");
+        tempFile.createNewFile();
 
+        // Try to copy the file content from the URI to the temporary file
+        try (InputStream inputStream = context.getContentResolver().openInputStream(contentUri);
+             OutputStream outputStream = new FileOutputStream(tempFile)) {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+        }
+
+        return tempFile;
+    }
+    public void uploadImage(Uri uri) {
         // Tạo File từ Uri
         File file = null;
         try {
-            file = getFileFromUri(uri); // Hàm getPathFromUri được giải thích bên dưới
+            file = getFileFromUriImgae(uri); // Hàm getPathFromUri được giải thích bên dưới
         } catch (Exception e) {
 
         }
@@ -354,38 +375,22 @@ public class ProfileFragment extends Fragment {
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         // Gọi API để upload video
-//        Call<UploadResponse> call = apitiktok.uploadVideo(body);
+        //User user = MainActivity.getCurrentUser();
         apitiktok.uploadImage(body).enqueue(new Callback<UploadResponse>() {
             @Override
             public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Upload thành công: " + response.body());
-                    MyUtil.user_current.setAvatar(response.body().getData());
-                    String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + MyUtil.user_current.getAvatar();
-                    try {
-                        if (MyUtil.user_current.getAvatar() != null && !MyUtil.user_current.getAvatar().isEmpty()) {
-                            Glide.with(context)
-                                    .load(imgURL)
-                                    .error(R.drawable.default_avatar)
-                                    .into(avatar);
-                        }else
-                            // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
-                            avatar.setImageResource(R.drawable.default_avatar);
-                    } catch (Exception e) {
-                        Log.w(TAG, "Glide error: " + e.getMessage());
+                    uploadAvatar(MyUtil.user_current,response.body().getData());
+//                    progressDialog.dismiss();
                     }
-                } else {
-                    try {
-                        Log.e(TAG, "Upload thất bại: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
             }
 
             @Override
             public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
                 Log.d(TAG, "Upload thất bại: " + t);
+                Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+//                progressDialog.dismiss();
             }
         });
     }
@@ -395,7 +400,6 @@ public class ProfileFragment extends Fragment {
         try {
         if (videoUri != null) {
             String content = edt_video_content.getText().toString().trim();
-//            uploadVideo(content,video.getFileName(), MyUtil.user_current.getUser_id());
             if (content.isEmpty()) {
             AlertDialog dialog = getConfirmationDialogBuilder(content).create();
             dialog.show();
@@ -403,14 +407,6 @@ public class ProfileFragment extends Fragment {
             }
             if (content.isEmpty()) {
                 AlertDialog.Builder builder = getConfirmationDialogBuilder(content);
-//                builder = new AlertDialog.Builder(context);
-//                builder.setTitle("Đăng video không có nội dung?");
-//                builder.setMessage("Bạn có chắc chắn muốn đăng video mà không có nội dung?");
-//                builder.setPositiveButton("Đồng ý", (dialog, which) -> {
-//                    dialog.dismiss();
-//                    uploadVideo(content,video.getFileName(), MyUtil.user_current.getUser_id());
-//                });
-//                builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
                 builder.show();
             } else {
                 uploadVideo(content,video.getFileName(), MyUtil.user_current.getUser_id());
@@ -425,7 +421,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private AlertDialog.Builder getConfirmationDialogBuilder(String content) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Đăng video không có nội dung?");
         builder.setMessage("Bạn có chắc chắn muốn đăng video mà không có nội dung?");
         builder.setPositiveButton("Đồng ý", (dialog, which) -> {
@@ -441,7 +437,7 @@ public class ProfileFragment extends Fragment {
     private void uploadVideo(String content, String fileName, String user_id) {
         if (videoUri != null) {
             // Progress bar
-            final ProgressDialog progressDialog = new ProgressDialog(context);
+            final ProgressDialog progressDialog = new ProgressDialog(requireContext());
             progressDialog.setTitle("Đang đăng video");
             progressDialog.setMessage("Vui lòng chờ...");
             progressDialog.show();
@@ -486,4 +482,52 @@ public class ProfileFragment extends Fragment {
             });
         }
     }
+    private void uploadAvatar(User user, String useravatar) {
+//        if (imgUri != null) {
+            // Progress bar
+//            final ProgressDialog progressDialog = new ProgressDialog(requireContext());
+//            progressDialog.setTitle("Đang đăng video");
+//            progressDialog.setMessage("Vui lòng chờ...");
+//            progressDialog.show();
+            apitiktok.updateUserAvatar(user.getUser_id(), useravatar).enqueue(new Callback<Root<User>>() {
+                @Override
+                public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                    if (response.isSuccessful()) {
+//                    User user = MainActivity.getCurrentUser();
+                        MyUtil.user_current = response.body().data;
+//                        ((MainActivity) requireActivity()).setCurrentUser(MyUtil.user_current);
+//                    MainActivity.getCurrentUser()=MyUtil.user_current;
+                        String imgURL = RetrofitClient.getBaseUrl() + "/api/file/image/view?fileName=" + MyUtil.user_current.getAvatar();
+                        try {
+                            if (MyUtil.user_current.getAvatar() != null && !MyUtil.user_current.getAvatar().isEmpty()) {
+                                Glide.with(context)
+                                        .load(imgURL)
+                                        .error(R.drawable.default_avatar)
+                                        .into(avatar);
+                            } else
+                                // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                                avatar.setImageResource(R.drawable.default_avatar);
+                        } catch (Exception e) {
+                            Log.w(TAG, "Glide error: " + e.getMessage());
+                        }
+                    } else {
+                        try {
+                            Log.e(TAG, "Upload thất bại: " + response.errorBody().string());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+//                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<Root<User>> call, Throwable t) {
+                    Log.d("Tai Avatar that bai", t.getMessage());
+                    Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                    // Ẩn ProgressDialog ngay cả khi yêu cầu thất bại
+//                    progressDialog.dismiss();
+                }
+            });
+        }
+//    }
 }

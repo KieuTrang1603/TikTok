@@ -1,7 +1,9 @@
 package com.example.tiktok;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class EditProfileActivity extends AppCompatActivity {
     EditText edtFullName, edtEmail, edtPhoneNumber;
     TextView txtChangePassword, txtDeleteAccount, txtSave;
     ImageView icBack;
+    Context context;
     final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     @Override
@@ -75,17 +78,20 @@ public class EditProfileActivity extends AppCompatActivity {
             user.setFullName(fullName);
             user.setEmail(email);
             user.setPhoneNumber(phoneNumber);
-            apitiktok.updateUser(user.getUser_id(),fullName,email,phoneNumber).enqueue(new Callback<Root<User>>() {
+            apitiktok.updateUser(user.getUser_id(),fullName,email,phoneNumber,user.getAvatar()).enqueue(new Callback<Root<User>>() {
                 @Override
                 public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-                    // Go to profile activity
-//                    Toast.makeText(this, "Lưu thành công", Toast.LENGTH_SHORT).show();
-//                    finish();
+                    if(response.isSuccessful()){
+                        MyUtil.user_current = response.body().data;
+                        // Go to profile activity
+                        Toast.makeText(context, "Lưu thành công", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<Root<User>> call, Throwable t) {
-
+                    Log.d("Update that bai",t.getMessage());
                 }
             });
         } else

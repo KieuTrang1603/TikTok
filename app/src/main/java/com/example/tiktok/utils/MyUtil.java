@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.WatchProfileActivity;
@@ -17,6 +18,7 @@ import com.example.tiktok.models.Video;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class MyUtil {
 
@@ -94,6 +96,10 @@ public class MyUtil {
     public static void goToUser(Context context, String user_id) {
         if (context instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) context;
+            if(MyUtil.user_current.getUser_id() == null){
+                Toast.makeText(context, "Bạn cần đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
+            }
+            else {
             if (MainActivity.getCurrentUser().getUser_id().equals(user_id)) {
                 mainActivity.changeNavItem(3);
             } else {
@@ -102,7 +108,8 @@ public class MyUtil {
                 intent.putExtra(User.TAG, user_id);
                 mainActivity.startActivity(intent);
             }
-        } else {
+        }
+        }else {
             Intent intent = new Intent(context, WatchProfileActivity.class);
             Log.d("forward to profile ", user_id);
             intent.putExtra(User.TAG, user_id);
@@ -114,5 +121,48 @@ public class MyUtil {
         Intent intent = new Intent(activity, WatchVideoActivity.class);
         intent.putExtra(Video.VIDEO_ID, videoId);
         activity.startActivity(intent);
+    }
+
+    public static String getTimeAgo(Date date) {
+        Date now = new Date();
+        long diff = now.getTime() - date.getTime();
+        // if less than 1 minute
+        if (diff < TimeUnit.MINUTES.toMillis(1)) {
+            return "Vừa xong";
+        }
+        // if less than 1 hour
+        else if (diff < TimeUnit.HOURS.toMillis(1)) {
+            return TimeUnit.MILLISECONDS.toMinutes(diff) + " phút trước";
+        }
+        // if less than 1 day
+        else if (diff < TimeUnit.DAYS.toMillis(1)) {
+            return TimeUnit.MILLISECONDS.toHours(diff) + " giờ trước";
+        }
+        // if less than 1 week
+        else if (diff < TimeUnit.DAYS.toMillis(7)) {
+            return TimeUnit.MILLISECONDS.toDays(diff) + " ngày trước";
+        }
+        // if less than 1 month
+        else if (diff < TimeUnit.DAYS.toMillis(30)) {
+            return TimeUnit.MILLISECONDS.toDays(diff) / 7 + " tuần trước";
+        }
+        // if less than 1 year
+        else if (diff < TimeUnit.DAYS.toMillis(365)) {
+            return TimeUnit.MILLISECONDS.toDays(diff) / 30 + " tháng trước";
+        }
+        // if more than 1 year
+        else {
+            return TimeUnit.MILLISECONDS.toDays(diff) / 365 + " năm trước";
+        }
+    }
+
+    // get time ago
+    public static String getTimeAgo(String dateString) {
+        Date date = stringToDateTime(dateString);
+        if (date != null) {
+            return getTimeAgo(date);
+        } else {
+            return "Date is null";
+        }
     }
 }
