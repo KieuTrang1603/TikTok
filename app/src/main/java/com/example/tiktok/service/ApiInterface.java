@@ -11,6 +11,7 @@ import com.example.tiktok.models.Video;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -31,7 +32,7 @@ public interface ApiInterface {
     //api check trung email (true: trung, false: khong trung)
 
     //search danh sach user
-    @GET("/api/user/search")
+    @GET("/api/users/search")
     Call<Root<Data<User>>> search(
             @Query("keyword") String keyword,
             @Query("pageIndex") @Nullable String pageIndex,
@@ -86,6 +87,14 @@ public interface ApiInterface {
     );
 
     @FormUrlEncoded
+    @PUT("/api/users/follow")
+    Call<Root<User>> follow(
+            @Field("following_id") String following_id, //id cua user dang muon follow or unfollow
+            @Field("user_id") String user_id //id tai khoan hien tai
+//            @Field("isFollow") Boolean isFollow // trang thai follow, truyen true: muon follow, false: bo follow
+    );
+
+    @FormUrlEncoded
     @POST("/api/videos")
     Call<Root<Video>> addvideo( //them moi video, fileName duoc lay khi upload video va api tra ra fileName
             @Field("content") String content,
@@ -93,9 +102,9 @@ public interface ApiInterface {
             @Field("user_id") String user_id
     );
 
-    @POST("/api/videos")
-    Call<Root<Video>> deletevideo(
-            @Field("user_id") String user_id
+    @DELETE("/api/videos/{video_id}")
+    Call<Root<Boolean>> deletevideo(
+            @Path("video_id") String video_id
     );
 
     @PUT("api/videos/{video_id}/increment-view")
@@ -111,12 +120,9 @@ public interface ApiInterface {
             @Query("pageSize") @Nullable String pageSize
     );
 
-    @FormUrlEncoded
-    @PUT("/api/users/follow")
-    Call<Root<User>> follow(
-            @Field("following_id") String following_id, //id cua user dang muon follow or unfollow
-            @Field("user_id") String user_id //id tai khoan hien tai
-//            @Field("isFollow") Boolean isFollow // trang thai follow, truyen true: muon follow, false: bo follow
+    @GET("api/videos/{video_id}")
+    Call<Root<Video>>getVideoById(
+            @Path("video_id") String video_id
     );
 
     @FormUrlEncoded
@@ -142,14 +148,14 @@ public interface ApiInterface {
     Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
 
     @FormUrlEncoded
-    @POST("/api/comment")
+    @POST("/api/comments")
     Call<Root<Comment>> addcomment(
             @Field("user_id") String user_id, // du lieu la username, email
             @Field("content") String content,
             @Field("video_id") String video_id
     );
 
-    @GET("/api/comment/search")
+    @GET("/api/comments/search")
     Call<Root<Data<Comment>>>getAllComment(
             @Query("keyword") @Nullable String keyword,
             @Query("video_id") @Nullable String video_id,

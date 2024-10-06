@@ -31,6 +31,7 @@ import com.example.tiktok.utils.RecyclerViewDisabler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -275,23 +276,6 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
                         Log.d(" that bai", t.getMessage());
                     }
                 });
-//            }
-////                VideoFirebase.unlikeVideo(video);
-//            else{
-//                apitiktok.like(video.getVideo_id(),user.getUser_id(),true).enqueue(new Callback<Root<User>>() {
-//                    @Override
-//                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-//                        Log.d("like thanh cong", response.message());
-//                        //goi api thong bao
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<Root<User>> call, Throwable t) {
-//                        Log.d("like that bai", t.getMessage());
-//                    }
-//                });
-//            }
-//                VideoFirebase.likeVideo(video);
         } else
             Toast.makeText(context, "Bạn cần đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
     }
@@ -345,10 +329,19 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
             }
         }
 
-        for (Video video : videos) {
+//        for (Video video : videos) {
+//            if (!newVideos.contains(video)) {
+//                int index = videos.indexOf(video);
+//                videos.remove(video);
+//                notifyItemRemoved(index);
+//            }
+//        }
+        Iterator<Video> iterator = videos.iterator();
+        while (iterator.hasNext()) {
+            Video video = iterator.next();
             if (!newVideos.contains(video)) {
                 int index = videos.indexOf(video);
-                videos.remove(video);
+                iterator.remove(); // Sử dụng iterator để xóa video an toàn
                 notifyItemRemoved(index);
             }
         }

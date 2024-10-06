@@ -25,7 +25,10 @@ import androidx.recyclerview.widget.SnapHelper;
 import com.bumptech.glide.Glide;
 import com.example.tiktok.adapters.VideoFragmentAdapter;
 import com.example.tiktok.models.Comment;
+import com.example.tiktok.models.Root;
 import com.example.tiktok.models.Video;
+import com.example.tiktok.service.ApiInterface;
+import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.KeyboardUtil;
 import com.example.tiktok.utils.MyUtil;
 
@@ -33,12 +36,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class WatchVideoActivity extends FragmentActivity {
     // Tag
     private static final String TAG = "WatchVideoActivity";
 
     RecyclerView recyclerView;
     Video video;
+    final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,26 +78,31 @@ public class WatchVideoActivity extends FragmentActivity {
         } catch (Exception e) {
             Log.w(TAG, "Glide error: " + e.getMessage());
         }
-//        VideoFirebase.getVideoByVideoId(videoId,
-//                v -> {
-//                    video = v;
-//                    if (recyclerView.getAdapter() == null) {
-//                        Log.i(TAG, "onDataChange: " + video.getVideoId());
-//                        List<Video> videos = new ArrayList<>();
-//                        videos.add(video);
-//                        VideoFragmentAdapter adapter = new VideoFragmentAdapter(videos, context);
-//                        if (commentId != null)
-//                            adapter.openCommentFragment(video, commentId);
-//                        recyclerView.setAdapter(adapter);
-//                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//                    } else {
-//                        Log.i(TAG, "onDataChange: update");
-//                        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-//                        adapter.notifyItemChanged(0, video);
-//                    }
-//                }, e -> {
-//                    Log.e(TAG, "onCancelled: " + e.getMessage());
-//                });
+        apitiktok.getVideoById(videoId).enqueue(new Callback<Root<Video>>() {
+            @Override
+            public void onResponse(Call<Root<Video>> call, Response<Root<Video>> response) {
+                video = response.body().data;
+                if (recyclerView.getAdapter() == null) {
+                        Log.i(TAG, "onDataChange: " + video.getVideo_id());
+                        List<Video> videos = new ArrayList<>();
+                        videos.add(video);
+                        VideoFragmentAdapter adapter = new VideoFragmentAdapter(videos, context);
+                        if (commentId != null)
+                            adapter.openCommentFragment(video, commentId);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    } else {
+                        Log.i(TAG, "onDataChange: update");
+                        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+                        adapter.notifyItemChanged(0, video);
+                    }
+            }
+
+            @Override
+            public void onFailure(Call<Root<Video>> call, Throwable t) {
+                Log.e(TAG, "Lay 1 video bi loi: " + t.getMessage());
+            }
+        });
 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);

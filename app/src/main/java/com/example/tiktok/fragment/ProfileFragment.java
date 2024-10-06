@@ -448,6 +448,8 @@ public class ProfileFragment extends Fragment {
                         Log.d(TAG, "Upload thành công: " + response.body());
                         Video video1 = new Video();
                         video1 = response.body().data;
+                        VideoFragment videoFragment = (VideoFragment) getParentFragmentManager().findFragmentByTag("VideoFragment");
+                        videoFragment.addNewVideo(video1);
                         Toast.makeText(context, "Đăng video thành công", Toast.LENGTH_SHORT).show();
                         try {
                             Glide.with(context).load(R.drawable.ic_add_video).into(ic_add_video);

@@ -180,7 +180,7 @@ public class CommentFragment extends Fragment {
         ImageView ic_cancel_reply = view.findViewById(R.id.ic_cancel_reply);
         ic_cancel_reply.setOnClickListener(v -> {
             // Set reply to comment id
-            CommentFragment.newComment.setReplyToCommentId(null);
+            CommentFragment.newComment.setParent_comment_id(null);
 
             // Hide reply comment title in input
             TextView title = ((MainActivity) context).findViewById(R.id.txt_reply_comment_title);
@@ -223,19 +223,19 @@ public class CommentFragment extends Fragment {
     }
 
     private void getComments() {
-        comments.clear();
-        if (video.getComments() != null) {
-            video.getComments().forEach((comment_id) -> {
+//        comments.clear();
+//        if (video.getComments() != null) {
+//            video.getComments().forEach((comment_id) -> {
                 apitiktok.getAllComment(null, video.getVideo_id(), null, null).enqueue(new Callback<Root<Data<Comment>>>() {
                     @Override
                     public void onResponse(Call<Root<Data<Comment>>> call, Response<Root<Data<Comment>>> response) {
                         if (response.isSuccessful()) {
                             Log.d("Lay comment thanh cong", response.message());
                             comments = response.body().data.content;
-                            if (comments.size() == video.getComments().size()) {
-                                comments.removeIf(c -> !c.isValid());
-                                // Sort comments by time
-                                Comment.sortByTimeNewsest(comments);
+//                            if (comments.size() == video.getComments().size()) {
+//                                comments.removeIf(c -> !c.isValid());
+//                                // Sort comments by time
+//                                Comment.sortByTimeNewsest(comments);
 
                                 CommentFragmentAdapter adapter = (CommentFragmentAdapter) recycler_view_comments.getAdapter();
                                 if (adapter != null)
@@ -251,11 +251,11 @@ public class CommentFragment extends Fragment {
                                 }
                             }
                         }
-                    }
+//                    }
 
                     @Override
                     public void onFailure(Call<Root<Data<Comment>>> call, Throwable t) {
-
+                        Log.d("That bai", t.getMessage());
                     }
                 });
 
@@ -281,8 +281,8 @@ public class CommentFragment extends Fragment {
 //                            Toast.makeText(context, "Lỗi khi lấy bình luận!", Toast.LENGTH_SHORT).show();
 //                        }
 //                );
-            });
-        }
+//            });
+//        }
     }
 
     public void scrollToComment(String commentId) {
@@ -305,7 +305,12 @@ public class CommentFragment extends Fragment {
             public void onResponse(Call<Root<Comment>> call, Response<Root<Comment>> response) {
                 if(response.isSuccessful()){
                     Log.d("Thanh cong", response.message());
+                    Toast.makeText(context, "Bình luận thành công!", Toast.LENGTH_SHORT).show();
                     //api thong bao
+//                    Comment comment = new Comment();
+//                    comment = response.body().data;
+//                    comments.add(response.body().data);
+//                    video.setComments(comment.getCommentIds(comments));
                 }
             }
 

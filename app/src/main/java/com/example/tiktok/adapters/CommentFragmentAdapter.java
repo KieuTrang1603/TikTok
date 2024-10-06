@@ -25,10 +25,18 @@ import com.example.tiktok.MainActivity;
 import com.example.tiktok.R;
 import com.example.tiktok.fragment.CommentFragment;
 import com.example.tiktok.models.Comment;
+import com.example.tiktok.models.Root;
+import com.example.tiktok.models.User;
+import com.example.tiktok.service.ApiInterface;
+import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.ItemClickListener;
 import com.example.tiktok.utils.MyUtil;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragmentAdapter.ViewHolder> {
         // tag'
@@ -36,7 +44,7 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
         Context context;
         private final List<Comment> comments;
         PopupMenu popupMenu;
-
+        final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 	public CommentFragmentAdapter(List<Comment> comments, Context context) {
             this.comments = comments;
             this.context = context;
@@ -73,27 +81,30 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
             holder.txt_username.setText(comment.getUsername());
             holder.txt_time_comment.setText(MyUtil.getTimeAgo(comment.getTime()));
             holder.txt_num_likes_comment.setText(String.valueOf(comment.getNum_like()));
+            apitiktok.getByIdUser(comment.getUser_id()).enqueue(new Callback<Root<User>>() {
+                @Override
+                public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                    User user = response.body().data;
+                    String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+                    try {
+                        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                            Glide.with(context)
+                                    .load(imgURL)
+                                    .error(R.drawable.default_avatar)
+                                    .into(holder.img_avatar);
+                        }else
+                            // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                            holder.img_avatar.setImageResource(R.drawable.default_avatar);
+                    } catch (Exception e) {
+                        Log.w(TAG, "Glide error: " + e.getMessage());
+                    }
+                }
 
-//            UserFirebase.getUserByUsernameOneTime(comment.getUsername(),
-//                    user -> {
-//                        try {
-//                            Glide.with(context)
-//                                    .load(user.getAvatar())
-//                                    .error(R.drawable.default_avatar)
-//                                    .into(holder.img_avatar);
-//                        } catch (Exception e) {
-//                            Log.w(TAG, "Glide error: " + e.getMessage());
-//                        }
-//                    }, databaseError -> {
-//                        try {
-//                            Glide.with(context)
-//                                    .load(R.drawable.default_avatar)
-//                                    .into(holder.img_avatar);
-//                        } catch (Exception e) {
-//                            Log.w(TAG, "Glide error: " + e.getMessage());
-//                        }
-//                    }
-//            );
+                @Override
+                public void onFailure(Call<Root<User>> call, Throwable t) {
+                    Log.d("Tai nguoi dung dang video that bai" , t.getMessage());
+                }
+        });
 
             RecyclerView recycler_reply_comment = holder.recycler_reply_comment;
             recycler_reply_comment.setLayoutManager(new LinearLayoutManager(context));
@@ -191,7 +202,7 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
 
         private void handleReplyComment(Comment comment) {
             // Set reply to comment id
-            CommentFragment.newComment.setReplyToCommentId(comment.getComment_id());
+            CommentFragment.newComment.setParent_comment_id(comment.getComment_id());
 
             // Show reply comment title in input
             TextView title = ((MainActivity) context).findViewById(R.id.txt_reply_comment_title);

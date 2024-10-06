@@ -82,6 +82,7 @@ public class VideoFragment extends Fragment {
             public void onResponse(Call<Root<Data<Video>>> call, Response<Root<Data<Video>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Video> listVideos =  response.body().data.content;
+                    videos = listVideos;
                     VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
                     if (adapter != null) {
                         adapter.setVideos(listVideos);
@@ -109,13 +110,20 @@ public class VideoFragment extends Fragment {
             adapter.pauseVideo();
         }
     }
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            // Fragment đang hiển thị trở lại, cập nhật giao diện hoặc tải lại dữ liệu
-            updateUI(); // Hoặc loadVideos() nếu cần
-        }
-    }
+//    @Override
+//    public void onHiddenChanged(boolean hidden) {
+//        super.onHiddenChanged(hidden);
+//        if (!hidden) {
+//            // Fragment đang hiển thị trở lại, cập nhật giao diện hoặc tải lại dữ liệu
+//            updateUI(); // Hoặc loadVideos() nếu cần
+//        }
+//    }
 
+    // Hàm này sẽ chỉ thêm một video mới vào danh sách đã có
+    public void addNewVideo(Video newVideo) {
+        // Thêm video mới vào danh sách hiện tại
+        videos.add(newVideo);
+        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+        adapter.setVideos(videos);
+    }
 }

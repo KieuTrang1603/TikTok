@@ -89,18 +89,18 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         builder.setTitle("Xóa video")
                 .setMessage("Bạn có chắc chắn muốn xóa video này?")
                 .setPositiveButton("Có", (dialog, which) -> {
-                    apitiktok.deletevideo(video.getVideo_id()).enqueue(new Callback<Root<Video>>() {
+                    apitiktok.deletevideo(video.getVideo_id()).enqueue(new Callback<Root<Boolean>>() {
                         @Override
-                        public void onResponse(Call<Root<Video>> call, Response<Root<Video>> response) {
+                        public void onResponse(Call<Root<Boolean>> call, Response<Root<Boolean>> response) {
                             if(response.isSuccessful()){
-                                Toast.makeText(context, "Xóa video thành công", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context,"Xóa video thành công", Toast.LENGTH_SHORT).show();
                                 videos.remove(position);
                                 notifyItemRemoved(position);
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<Root<Video>> call, Throwable t) {
+                        public void onFailure(Call<Root<Boolean>> call, Throwable t) {
                             Log.e("Xóa thất bại", t.getMessage());
                         }
                     });

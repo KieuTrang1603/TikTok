@@ -3,6 +3,7 @@ package com.example.tiktok.models;
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.utils.MyUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,18 +12,18 @@ public class Comment {
     public static final String TAG = "Comment";
     public static final String COMMENT_ID = "commentId";
 
-    private String comment_id, user_id, video_id, username, content, replyToCommentId;
+    private String comment_id, user_id, video_id, username, content, parent_comment_id, avatar,video_content;
     private int num_replies , num_like ;
     private String time = MyUtil.dateTimeToString(new Date());
-    private HashMap<String, Boolean> replies;
-    private HashMap<String, Boolean> likes;
+    private List<String> replies;
+    private List<String> likes;
 
-    public Comment(String comment_id, String user_id, String video_id, String content, String replyToCommentId, int num_replies, int num_like, String time, HashMap<String, Boolean> replies, HashMap<String, Boolean> likes) {
+    public Comment(String comment_id, String user_id, String video_id, String content, String parent_comment_id, int num_replies, int num_like, String time, List<String>replies, List<String> likes) {
         this.comment_id = comment_id;
         this.user_id = user_id;
         this.video_id = video_id;
         this.content = content;
-        this.replyToCommentId = replyToCommentId;
+        this.parent_comment_id = parent_comment_id;
         this.num_replies = num_replies;
         this.num_like = num_like;
         this.time = time;
@@ -31,8 +32,6 @@ public class Comment {
     }
 
     public Comment() {
-        replies = new HashMap<>();
-        likes = new HashMap<>();
     }
 
     public String getComment_id() {
@@ -75,14 +74,6 @@ public class Comment {
         this.content = content;
     }
 
-    public String getReplyToCommentId() {
-        return replyToCommentId;
-    }
-
-    public void setReplyToCommentId(String replyToCommentId) {
-        this.replyToCommentId = replyToCommentId;
-    }
-
     public int getNum_replies() {
         return num_replies;
     }
@@ -107,20 +98,44 @@ public class Comment {
         this.time = time;
     }
 
-    public HashMap<String, Boolean> getReplies() {
+    public List<String> getReplies() {
         return replies;
     }
 
-    public void setReplies(HashMap<String, Boolean> replies) {
+    public void setReplies(List<String> replies) {
         this.replies = replies;
     }
 
-    public HashMap<String, Boolean> getLikes() {
+    public List<String> getLikes() {
         return likes;
     }
 
-    public void setLikes(HashMap<String, Boolean> likes) {
+    public void setLikes(List<String> likes) {
         this.likes = likes;
+    }
+
+    public String getParent_comment_id() {
+        return parent_comment_id;
+    }
+
+    public void setParent_comment_id(String parent_comment_id) {
+        this.parent_comment_id = parent_comment_id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getVideo_content() {
+        return video_content;
+    }
+
+    public void setVideo_content(String video_content) {
+        this.video_content = video_content;
     }
 
     public boolean isValid() {
@@ -142,6 +157,21 @@ public class Comment {
 
     public boolean isLiked() {
         return likes != null && MainActivity.getCurrentUser() != null
-                && likes.containsKey(MainActivity.getCurrentUser().getUser_id());
+                && likes.contains(MainActivity.getCurrentUser().getUser_id());
+    }
+
+    public List<String> getCommentIds(List<Comment> comments) {
+        List<String> commentIds = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            commentIds.add(comment.getComment_id()); // Lấy ID của từng bình luận và thêm vào danh sách
+
+            // Nếu bình luận này có phản hồi (replies), lấy ID của các phản hồi
+//            if (!comment.getReplies().isEmpty()) {
+//                commentIds.addAll(getCommentIds(comment.getReplies())); // Đệ quy để lấy ID của các bình luận lồng nhau
+//            }
+        }
+
+        return commentIds;
     }
 }
