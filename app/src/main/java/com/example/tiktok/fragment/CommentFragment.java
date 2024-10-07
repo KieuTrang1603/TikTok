@@ -28,6 +28,7 @@ import com.example.tiktok.R;
 import com.example.tiktok.WatchVideoActivity;
 import com.example.tiktok.adapters.CommentFragmentAdapter;
 import com.example.tiktok.adapters.VideoFragmentAdapter;
+import com.example.tiktok.adapters.VideoGridAdapter;
 import com.example.tiktok.models.Comment;
 import com.example.tiktok.models.Data;
 import com.example.tiktok.models.Root;
@@ -307,10 +308,18 @@ public class CommentFragment extends Fragment {
                     Log.d("Thanh cong", response.message());
                     Toast.makeText(context, "Bình luận thành công!", Toast.LENGTH_SHORT).show();
                     //api thong bao
-//                    Comment comment = new Comment();
-//                    comment = response.body().data;
+                    Comment comment = new Comment();
+                    comment = response.body().data;
 //                    comments.add(response.body().data);
 //                    video.setComments(comment.getCommentIds(comments));
+                    CommentFragmentAdapter commentFragmentAdapter = (CommentFragmentAdapter) recycler_view_comments.getAdapter();
+                    if (commentFragmentAdapter != null) {
+                        // Thêm comment mới vào danh sách comment trong adapter
+                        commentFragmentAdapter.getComments().add(comment);
+
+                        // Thông báo cho adapter rằng có một phần tử mới
+                        commentFragmentAdapter.notifyItemInserted(commentFragmentAdapter.getItemCount());
+                    }
                 }
             }
 

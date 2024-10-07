@@ -126,4 +126,11 @@ public class VideoFragment extends Fragment {
         VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
         adapter.setVideos(videos);
     }
+
+    public void deleteVideo(Video newVideo) {
+        // Thêm video mới vào danh sách hiện tại
+        videos.remove(newVideo);
+        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+        adapter.setVideos(videos);
+    }
 }

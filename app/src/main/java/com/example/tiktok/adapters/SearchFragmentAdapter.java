@@ -2,6 +2,7 @@ package com.example.tiktok.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.R;
+import com.example.tiktok.models.Root;
 import com.example.tiktok.models.User;
+import com.example.tiktok.service.ApiInterface;
 import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.MyUtil;
 import com.example.tiktok.utils.RecyclerViewDisabler;
@@ -25,8 +28,13 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAdapter.SearchViewHolder> {
     private static final String TAG = "SearchFragementAdapter";
+    final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     public static RecyclerView.OnItemTouchListener disableTouchListener = new RecyclerViewDisabler();
     Context context;
@@ -71,10 +79,10 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
             //get user current
             User currentUser = MainActivity.getCurrentUser();
             if ((Integer.parseInt(String.valueOf(user.getNum_followers())) > 0 && currentUser.isFollowing(user.getUsername())) || user.getUsername().equals(currentUser.getUsername())) {
-//				holder.btn_follow.setText("Following");
-//				//set backgroundTint to button
-//				holder.btn_follow.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.teal_200)));
-//				holder.btn_follow.setEnabled(false);
+				holder.btn_follow.setText("Following");
+				//set backgroundTint to button
+				holder.btn_follow.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.teal_200)));
+				holder.btn_follow.setEnabled(false);
                 //hide button
                 holder.btn_follow.setVisibility(View.GONE);
             }
@@ -93,15 +101,29 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
         //handle follow button
         holder.btn_follow.setOnClickListener(v -> {
             //api follow
-//            UserFirebase.followUser(user.getUsername());
+            apitiktok.follow(user.getUser_id(),MyUtil.user_current.getUser_id()).enqueue(new Callback<Root<User>>() {
+                @Override
+                public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                    Log.d("UnFollow thanh cong", response.message());
+                    holder.btn_follow.setText("Following");
+                    //set backgroundTint to button
+                    holder.btn_follow.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.teal_200)));
+                    holder.btn_follow.setEnabled(false);
+                    holder.btn_follow.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(Call<Root<User>> call, Throwable t) {
+                    Log.d("Follow that bai", t.getMessage());
+                }
+            });
 //				//hide button
-            holder.btn_follow.setVisibility(View.GONE);
             Toast.makeText(context, "Đã theo dõi " + user.getUsername(), Toast.LENGTH_SHORT).show();
         });
         //handle click item
         holder.itemView.setOnClickListener(v -> {
-            Log.d(TAG, "onClick on Search: " + user.getUsername());
-            MyUtil.goToUser((Activity) context, user.getUsername());
+            Log.d(TAG, "onClick on Search: " + user.getUser_id());
+            MyUtil.goToUser((Activity) context, user.getUser_id());
         });
 
     }

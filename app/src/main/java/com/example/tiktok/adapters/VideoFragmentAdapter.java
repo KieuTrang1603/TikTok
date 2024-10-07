@@ -136,7 +136,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         }catch (Exception e) {
             Log.e(TAG, "Hien thi video: " + e.getMessage());
         }
-        updateUI(holder, video);
+        updateUI(holder, video,position);
 
         boolean isLoaded = false;
         if (isVideoInitiated.containsKey(video.getVideo_id())) {
@@ -168,7 +168,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         MyUtil.goToUser(context, video.getUser_id());
     }
 
-    private void updateUI(VideoViewHolder holder, Video video) {
+    private void updateUI(VideoViewHolder holder, Video video, int position) {
         // Set info video if change
         holder.txt_num_likes.setText(MyUtil.getNumberToText(video.getNum_like(), 2));
         holder.txt_num_comments.setText(MyUtil.getNumberToText(video.getNum_comments(), 2));
@@ -177,6 +177,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         if (!MainActivity.isLoggedIn() || MainActivity.getCurrentUser().getUser_id().equals(video.getUser_id())) {
             holder.img_follow.setVisibility(View.GONE);
         } else {
+            Log.d("Nguoi dung hien tại", MainActivity.getCurrentUser().toString());
             if (MainActivity.getCurrentUser().isFollowing(video.getUser_id())) {
                 holder.img_follow.setImageResource(R.drawable.ic_following);
             } else {
@@ -201,11 +202,11 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
 
         // Set onClickListener for img_like
         holder.img_like.setOnClickListener(v ->
-                handleClickLike(holder, video));
+                handleClickLike(holder,video ,position ));
 
         // Set onClickListener for img_follow
         holder.img_follow.setOnClickListener(v ->
-                handleClickFollow(video, holder.img_follow));
+                handleClickFollow(holder,video,position));
 
         // Set onClickListener for img_avatar
         holder.img_avatar.setOnClickListener(v -> handleClickAvatar(video));
@@ -222,7 +223,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         context.startActivity(Intent.createChooser(shareIntent, context.getResources().getString(R.string.share)));
     }
 
-    private void handleClickFollow(Video video, ImageView img_follow) {
+    private void handleClickFollow(VideoViewHolder holder, Video video, int position) {
         if (!MainActivity.isLoggedIn())
             Toast.makeText(context, "Bạn cần đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
         else {
@@ -230,7 +231,10 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
                 apitiktok.follow(video.getUser_id(),user.getUser_id()).enqueue(new Callback<Root<User>>() {
                     @Override
                     public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                        User user1 = response.body().data;
                         Log.d("UnFollow thanh cong", response.message());
+                        MainActivity.setCurrent(user1);
+                        updateUI(holder,video,position);
                     }
 
                     @Override
@@ -258,7 +262,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         }
     }
 
-    private void handleClickLike(VideoViewHolder holder, Video video) {
+    private void handleClickLike(VideoViewHolder holder, Video video, int position) {
         if (MainActivity.isLoggedIn()) {
             User user = MainActivity.getCurrentUser();
 //            if (video.isLiked()){
@@ -268,7 +272,10 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
                         Log.d(" thanh cong", response.message());
                         Video video1 = new Video();
                         video1 = response.body().data;
-                        updateUI(holder,video1);
+                        videos.set(position, video1);
+                        notifyItemChanged(position);
+                        updateUI(holder,video1,position);
+//                        video= video1;
                     }
 
                     @Override

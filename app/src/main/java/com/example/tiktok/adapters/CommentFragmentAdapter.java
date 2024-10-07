@@ -27,11 +27,13 @@ import com.example.tiktok.fragment.CommentFragment;
 import com.example.tiktok.models.Comment;
 import com.example.tiktok.models.Root;
 import com.example.tiktok.models.User;
+import com.example.tiktok.models.Video;
 import com.example.tiktok.service.ApiInterface;
 import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.ItemClickListener;
 import com.example.tiktok.utils.MyUtil;
 
+import java.util.Iterator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -45,7 +47,7 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
         private final List<Comment> comments;
         PopupMenu popupMenu;
         final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
-	public CommentFragmentAdapter(List<Comment> comments, Context context) {
+	    public CommentFragmentAdapter(List<Comment> comments, Context context) {
             this.comments = comments;
             this.context = context;
         }
@@ -81,30 +83,43 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
             holder.txt_username.setText(comment.getUsername());
             holder.txt_time_comment.setText(MyUtil.getTimeAgo(comment.getTime()));
             holder.txt_num_likes_comment.setText(String.valueOf(comment.getNum_like()));
-            apitiktok.getByIdUser(comment.getUser_id()).enqueue(new Callback<Root<User>>() {
-                @Override
-                public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-                    User user = response.body().data;
-                    String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
-                    try {
-                        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                            Glide.with(context)
-                                    .load(imgURL)
-                                    .error(R.drawable.default_avatar)
-                                    .into(holder.img_avatar);
-                        }else
-                            // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
-                            holder.img_avatar.setImageResource(R.drawable.default_avatar);
-                    } catch (Exception e) {
-                        Log.w(TAG, "Glide error: " + e.getMessage());
-                    }
-                }
+            String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + comment.getAvatar();
+            try {
+                if (comment.getAvatar() != null && !comment.getAvatar().isEmpty()) {
+                    Glide.with(context)
+                            .load(imgURL)
+                            .error(R.drawable.default_avatar)
+                            .into(holder.img_avatar);
+                }else
+                    // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                    holder.img_avatar.setImageResource(R.drawable.default_avatar);
+            } catch (Exception e) {
+                Log.w(TAG, "Glide error: " + e.getMessage());
+            }
+//            apitiktok.getByIdUser(comment.getUser_id()).enqueue(new Callback<Root<User>>() {
+//                @Override
+//                public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+//                    User user = response.body().data;
+//                    String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+//                    try {
+//                        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+//                            Glide.with(context)
+//                                    .load(imgURL)
+//                                    .error(R.drawable.default_avatar)
+//                                    .into(holder.img_avatar);
+//                        }else
+//                            // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+//                            holder.img_avatar.setImageResource(R.drawable.default_avatar);
+//                    } catch (Exception e) {
+//                        Log.w(TAG, "Glide error: " + e.getMessage());
+//                    }
+//                }
 
-                @Override
-                public void onFailure(Call<Root<User>> call, Throwable t) {
-                    Log.d("Tai nguoi dung dang video that bai" , t.getMessage());
-                }
-        });
+//                @Override
+//                public void onFailure(Call<Root<User>> call, Throwable t) {
+//                    Log.d("Tai nguoi dung dang video that bai" , t.getMessage());
+//                }
+//        });
 
             RecyclerView recycler_reply_comment = holder.recycler_reply_comment;
             recycler_reply_comment.setLayoutManager(new LinearLayoutManager(context));
@@ -245,6 +260,15 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
                 }
                 return false;
             });
+//            Iterator<Comment> iterator = comments.iterator();
+//            while (iterator.hasNext()) {
+//                Comment comment = iterator.next();
+//                if (!newComments.contains(comment)) {
+//                    int index = comments.indexOf(comment);
+//                    iterator.remove(); // Sử dụng comment để xóa video an toàn
+//                    notifyItemRemoved(index);
+//                }
+//            }
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

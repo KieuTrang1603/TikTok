@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tiktok.MainActivity;
 import com.example.tiktok.R;
+import com.example.tiktok.fragment.VideoFragment;
 import com.example.tiktok.models.Root;
 import com.example.tiktok.models.Video;
 import com.example.tiktok.service.ApiInterface;
@@ -96,6 +97,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                                 Toast.makeText(context,"Xóa video thành công", Toast.LENGTH_SHORT).show();
                                 videos.remove(position);
                                 notifyItemRemoved(position);
+//                                VideoFragment videoFragment = (VideoFragment) getParentFragmentManager().findFragmentByTag("VideoFragment");
+//                                videoFragment.deleteVideo(video);
                             }
                         }
 

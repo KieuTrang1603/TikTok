@@ -58,6 +58,9 @@ public class MainActivity extends FragmentActivity {
         return currentUser;
     }
 
+    public static void setCurrent(User user){
+        currentUser=user;
+    }
     public void setCurrentUser(User user) {
         if (user != null) {
                 if (user.getUser_id() != null) {

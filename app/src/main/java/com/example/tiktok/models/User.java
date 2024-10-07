@@ -140,6 +140,7 @@ public class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
+                ", followings='" + followings + '\'' +
                 '}';
     }
 

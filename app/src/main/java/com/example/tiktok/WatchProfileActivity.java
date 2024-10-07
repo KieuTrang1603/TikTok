@@ -83,7 +83,10 @@ public class WatchProfileActivity extends AppCompatActivity {
                 apitiktok.follow(user.getUser_id(),MainActivity.getCurrentUser().getUser_id()).enqueue(new Callback<Root<User>>() {
                     @Override
                     public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
+                        User user1 = response.body().data;
                         Log.d("UnFollow thanh cong", response.message());
+                        MainActivity.setCurrent(user1);
+                        updateUI(user);
                     }
 
                     @Override
@@ -151,7 +154,7 @@ public class WatchProfileActivity extends AppCompatActivity {
         numLikes.setText(user.getNum_like() + "");
         username.setText(user.getUsername());
         if (MainActivity.isLoggedIn())
-            setFollowStatus(MainActivity.getCurrentUser().isFollowing(user.getUsername()));
+            setFollowStatus(MainActivity.getCurrentUser().isFollowing(user.getUser_id()));
         else
             txt_follow_status.setVisibility(View.GONE);
         try {
@@ -183,25 +186,6 @@ public class WatchProfileActivity extends AppCompatActivity {
         }
     }
 
-//    private void prepareRecyclerView(User user) {
-//        VideoFirebase.getVideoByUsernameOneTime(user.getUsername(),
-//                listvideos -> {
-//                    if (listvideos.size() > 0) {
-//                        if (videos == null || !videos.equals(listvideos)) {
-//                            videos = listvideos;
-//                        }
-//                        if (recyclerView.getAdapter() == null) {
-//                            VideoGridAdapter adapter = new VideoGridAdapter(videos, context);
-//                            recyclerView.setAdapter(adapter);
-//                            recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
-//                        } else {
-//                            ((VideoGridAdapter) recyclerView.getAdapter()).setVideos(videos);
-//                        }
-//                    }
-//                },
-//                error -> Toast.makeText(context, "Failed to load videos", Toast.LENGTH_SHORT).show()
-//        );
-//    }
     private void prepareRecyclerView(User user) {
         apitiktok.getAllVideo(null,user.getUser_id(),null,null).enqueue(new Callback<Root<Data<Video>>>() {
             @Override
