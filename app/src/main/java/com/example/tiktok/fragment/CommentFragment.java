@@ -197,7 +197,7 @@ public class CommentFragment extends Fragment {
         // Get comment content
         String content = txt_comment_input.getText().toString().trim();
         newComment.setContent(content);
-        newComment.setTime(MyUtil.dateTimeToString(new Date()));
+//        newComment.setTime(MyUtil.dateTimeToString(new Date()));
         newComment.setUsername(MainActivity.getCurrentUser().getUsername());
         newComment.setVideo_id(video.getVideo_id());
 
@@ -208,7 +208,7 @@ public class CommentFragment extends Fragment {
         Toast.makeText(context, "Bình luận thành công!", Toast.LENGTH_SHORT).show();
 
         // Refresh comments
-        getComments();
+//        getComments();
 
         // Scroll to top
         recycler_view_comments.scrollToPosition(0);
@@ -301,7 +301,7 @@ public class CommentFragment extends Fragment {
         }
     }
     private void addCommentToVideo(Comment newComment, Video video){
-        apitiktok.addcomment(newComment.getUser_id(), newComment.getContent(), video.getVideo_id()).enqueue(new Callback<Root<Comment>>() {
+        apitiktok.addcomment(MyUtil.user_current.getUser_id(), newComment.getContent(), video.getVideo_id()).enqueue(new Callback<Root<Comment>>() {
             @Override
             public void onResponse(Call<Root<Comment>> call, Response<Root<Comment>> response) {
                 if(response.isSuccessful()){
@@ -310,6 +310,7 @@ public class CommentFragment extends Fragment {
                     //api thong bao
                     Comment comment = new Comment();
                     comment = response.body().data;
+//                    video.setNum_comments(video.getNum_like() + 1);
 //                    comments.add(response.body().data);
 //                    video.setComments(comment.getCommentIds(comments));
                     CommentFragmentAdapter commentFragmentAdapter = (CommentFragmentAdapter) recycler_view_comments.getAdapter();

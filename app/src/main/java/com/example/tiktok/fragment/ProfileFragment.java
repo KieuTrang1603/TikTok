@@ -532,4 +532,13 @@ public class ProfileFragment extends Fragment {
             });
         }
 //    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            // Fragment đang hiển thị trở lại, cập nhật giao diện hoặc tải lại dữ liệu
+            updateUI(); // Hoặc loadVideos() nếu cần
+        }
+    }
 }

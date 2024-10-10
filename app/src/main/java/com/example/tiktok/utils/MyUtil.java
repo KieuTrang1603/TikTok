@@ -48,6 +48,7 @@ public class MyUtil {
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String DD_MM_YYYY = "dd-MM-yyyy";
     public static final String DD_MM_YYYY_HH_MM_SS = "dd-MM-yyyy HH:mm:ss";
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
 
     // Date to string
@@ -66,6 +67,8 @@ public class MyUtil {
 
     // String to date
     public static Date stringToDateFormat(String dateString, String format) {
+//        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+//        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         try {
             return sdf.parse(dateString);

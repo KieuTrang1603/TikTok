@@ -86,7 +86,17 @@ public class WatchProfileActivity extends AppCompatActivity {
                         User user1 = response.body().data;
                         Log.d("UnFollow thanh cong", response.message());
                         MainActivity.setCurrent(user1);
-                        updateUI(user);
+                        if(response.body().message.contains("Đã bỏ follow " + user.getFullName())){
+                            int follower = user.getNum_followers();
+                            user.setNum_followers(follower - 1);
+                            updateUI(user);
+                        }
+                        else {
+                            int follower = user.getNum_followers();
+                            user.setNum_followers(follower + 1);
+                            updateUI(user);
+                        }
+//                        MainActivity.setCurrent(user1);
                     }
 
                     @Override
@@ -94,21 +104,6 @@ public class WatchProfileActivity extends AppCompatActivity {
                         Log.d("UnFollow that bai", t.getMessage());
                     }
                 });
-
-//            } else {
-////                UserFirebase.followUser(user.getUsername());
-//                apitiktok.follow(user.getUser_id(),MainActivity.getCurrentUser().getUser_id()).enqueue(new Callback<Root<User>>() {
-//                    @Override
-//                    public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
-//                        Log.d("UnFollow thanh cong", response.message());
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<Root<User>> call, Throwable t) {
-//                        Log.d("UnFollow that bai", t.getMessage());
-//                    }
-//                });
-//            }
         });
 
         loadData(user_idText);

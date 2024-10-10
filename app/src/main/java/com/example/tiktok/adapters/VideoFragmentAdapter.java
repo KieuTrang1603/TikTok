@@ -72,7 +72,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(@NonNull VideoFragmentAdapter.VideoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
         // Check video is exist or not
         if (videos.get(position) == null)
             return;
@@ -137,6 +137,10 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
             Log.e(TAG, "Hien thi video: " + e.getMessage());
         }
         updateUI(holder, video,position);
+
+        holder.itemView.setOnClickListener(v -> {
+            handleItemClick(holder, video, position);
+        });
 
         boolean isLoaded = false;
         if (isVideoInitiated.containsKey(video.getVideo_id())) {
@@ -394,6 +398,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         imgPause.setVisibility(View.VISIBLE);
     }
 
+
     public void pauseVideo() {
         for (VideoViewHolder holder : holders) {
             pauseVideo(holder.videoView, holder.img_pause);
@@ -420,5 +425,13 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
             img_share = itemView.findViewById(R.id.img_share);
 //        return 0;
         }
+    }
+//    public void updateUI(int position) {
+//        Video video = videos.get(position);
+////        Log.d(TAG, "updateUI: " + user.toString());
+//        updateUI(holders,);
+//    }
+    private void handleItemClick(VideoViewHolder holder, Video video, int position){
+        updateUI(holder,video,position);
     }
 }

@@ -81,7 +81,8 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
             Comment comment = comments.get(position);
             holder.txt_content.setText(comment.getContent());
             holder.txt_username.setText(comment.getUsername());
-            holder.txt_time_comment.setText(MyUtil.getTimeAgo(comment.getTime()));
+//            holder.txt_time_comment.setText(MyUtil.getTimeAgo(comment.getTime()));
+            holder.txt_time_comment.setText(comment.getTime());
             holder.txt_num_likes_comment.setText(String.valueOf(comment.getNum_like()));
             String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + comment.getAvatar();
             try {
