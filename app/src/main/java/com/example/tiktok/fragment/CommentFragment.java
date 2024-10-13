@@ -32,6 +32,7 @@ import com.example.tiktok.adapters.VideoGridAdapter;
 import com.example.tiktok.models.Comment;
 import com.example.tiktok.models.Data;
 import com.example.tiktok.models.Root;
+import com.example.tiktok.models.User;
 import com.example.tiktok.models.Video;
 import com.example.tiktok.service.ApiInterface;
 import com.example.tiktok.service.RetrofitClient;
@@ -110,8 +111,9 @@ public class CommentFragment extends Fragment {
         ImageView avatar = view.findViewById(R.id.img_avatar);
 
         try {
-            String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + MyUtil.user_current.getAvatar();
-            if (MyUtil.user_current.getAvatar() != null && !MyUtil.user_current.getAvatar().isEmpty()) {
+            User user = MainActivity.getCurrentUser();
+            String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 Glide.with(context)
                         .load(imgURL)
                         .error(R.drawable.default_avatar)

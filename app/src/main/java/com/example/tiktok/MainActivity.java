@@ -30,13 +30,20 @@ import com.example.tiktok.fragment.NotificationFragment;
 import com.example.tiktok.fragment.ProfileFragment;
 import com.example.tiktok.fragment.SearchFragment;
 import com.example.tiktok.fragment.VideoFragment;
+import com.example.tiktok.models.Root;
 import com.example.tiktok.models.User;
+import com.example.tiktok.models.Video;
+import com.example.tiktok.service.ApiInterface;
+import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.KeyboardUtil;
 import com.example.tiktok.utils.MyUtil;
 
 import kotlin.Unit;
 import np.com.susanthapa.curved_bottom_navigation.CbnMenuItem;
 import np.com.susanthapa.curved_bottom_navigation.CurvedBottomNavigationView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends FragmentActivity {
     public static final String EXTRA_REGISTER = "register";
@@ -47,6 +54,7 @@ public class MainActivity extends FragmentActivity {
     public static final int REQUEST_CHANGE_AVATAR = 3;
     public static final int REQUEST_ADD_VIDEO = 4;
     private static User currentUser;
+    final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 
     @SuppressLint("StaticFieldLeak")
     CurvedBottomNavigationView nav;
@@ -63,22 +71,13 @@ public class MainActivity extends FragmentActivity {
     }
     public void setCurrentUser(User user) {
         if (user != null) {
-                if (user.getUser_id() != null) {
-                    Log.d(TAG, "setCurrentUser: " + user.getUser_id());
-                    currentUser = user;
-                    Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
-                    updateUI();
-                    // start service
-                    //startService(new Intent(this, NotificationService.class));
-                }
+            currentUser = user;
+            Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
+            updateUI();
             }
         else {
             currentUser = null;
             updateUI();
-            //mAuth.signOut();
-            //stop service
-            //stopService(new Intent(this, NotificationService.class));
-            // Log
             Log.i(TAG, "setCurrentUser: logged out");
         }
     }
@@ -86,16 +85,15 @@ public class MainActivity extends FragmentActivity {
         return currentUser != null;
     }
 
-//    private void getUser(){
-//        if (MyUtil.user_current.getUser_id() == null){
-//            updateUI();
-//        }else {
-//            updateUI();
-//            setCurrentUser(MyUtil.user_current);
-//            }
-//        }
-
     //ghi đè
+    @Override
+    protected void onResume() {
+        super.onResume();
+        User user = MyUtil.user_current;
+        if (user.getUser_id() != null) {
+            setCurrentUser(user);
+        }
+    }
     protected void onStart() {
         super.onStart();
         if (activeFragment == null || activeFragment instanceof VideoFragment) {
@@ -103,6 +101,15 @@ public class MainActivity extends FragmentActivity {
         } else {
             MyUtil.setLightStatusBar(this);
         }
+//        if (MyUtil.user_current != null){
+//            User user = new User();
+//            user.setUser_id(MyUtil.user_current.getUser_id());
+////            User user = MyUtil.user_current;
+//            setCurrentUser(user);
+//        }
+//        User user = new User();
+//        user.setUser_id(MyUtil.user_current.getUser_id());
+//        setCurrentUser(user);
 //        Log.d(TAG, "setCurrentUser: " + MyUtil.user_current.getUser_id());
 //        Intent intent = getIntent();
 //        User currentUser = (User) intent.getSerializableExtra("USER");
@@ -133,6 +140,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == LOGIN_REQUEST_CODE) {
+            Log.d(TAG, "onActivityResult: Handling login result");
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     User user = (User) data.getSerializableExtra(LoginActivity.USER);
@@ -302,6 +310,7 @@ public class MainActivity extends FragmentActivity {
 
     public void logOut() {
         setCurrentUser(null);
+        MyUtil.user_current=null;
         changeNavItem(0);
     }
     @Override
@@ -319,5 +328,8 @@ public class MainActivity extends FragmentActivity {
             builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
             builder.show();
         }
+    }
+    public static void deleteVideo(Video video){
+        VideoFragment.getInstance().deleteVideo(video);
     }
 }

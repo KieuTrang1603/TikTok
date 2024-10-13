@@ -97,6 +97,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                                 Toast.makeText(context,"Xóa video thành công", Toast.LENGTH_SHORT).show();
                                 videos.remove(position);
                                 notifyItemRemoved(position);
+                                MainActivity.deleteVideo(video);
 //                                VideoFragment videoFragment = (VideoFragment) getParentFragmentManager().findFragmentByTag("VideoFragment");
 //                                videoFragment.deleteVideo(video);
                             }

@@ -78,7 +78,7 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
             holder.txt_number_follow.setText(String.valueOf(user.getNum_followers()));
             //get user current
             User currentUser = MainActivity.getCurrentUser();
-            if ((Integer.parseInt(String.valueOf(user.getNum_followers())) > 0 && currentUser.isFollowing(user.getUsername())) || user.getUsername().equals(currentUser.getUsername())) {
+            if ((Integer.parseInt(String.valueOf(user.getNum_followers())) > 0 && currentUser.isFollowing(user.getUser_id())) || user.getUser_id().equals(currentUser.getUser_id())) {
 				holder.btn_follow.setText("Following");
 				//set backgroundTint to button
 				holder.btn_follow.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.teal_200)));
@@ -88,12 +88,16 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
             }
         }
         // Load avatar
-        String imgURL = RetrofitClient.getBaseUrl() +"/api/file/video/view?fileName=" + user.getAvatar();
+        String imgURL = RetrofitClient.getBaseUrl() +"/api/file/image/view?fileName=" + user.getAvatar();
         try {
-            Glide.with(context)
-                    .load(imgURL)
-                    .error(R.drawable.default_avatar)
-                    .into(holder.img_avatar);
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                Glide.with(context)
+                        .load(imgURL)
+                        .error(R.drawable.default_avatar)
+                        .into(holder.img_avatar);
+            }else
+                // Hiển thị ảnh mặc định khi avatarUrl là null hoặc chuỗi rỗng
+                holder.img_avatar.setImageResource(R.drawable.default_avatar);
         } catch (Exception e) {
             Log.w(TAG, "Glide error: " + e.getMessage());
         }
@@ -110,6 +114,10 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
                     holder.btn_follow.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.teal_200)));
                     holder.btn_follow.setEnabled(false);
                     holder.btn_follow.setVisibility(View.GONE);
+                    User user1=response.body().data;
+                    holder.txt_number_follow.setText(String.valueOf(user1.getNum_followers()));
+                    MyUtil.user_current.follow(user.getUser_id());
+                    Toast.makeText(context, "Đã theo dõi " + user.getUsername(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -118,7 +126,7 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
                 }
             });
 //				//hide button
-            Toast.makeText(context, "Đã theo dõi " + user.getUsername(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Đã theo dõi " + user.getUsername(), Toast.LENGTH_SHORT).show();
         });
         //handle click item
         holder.itemView.setOnClickListener(v -> {

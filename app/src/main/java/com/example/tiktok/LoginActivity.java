@@ -93,22 +93,23 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
                     Log.d(TAG, "onResponse: " + response.body().data);
-                    if (response.message() !="Tài khoản không đúng") {
                         MyUtil.user_current = response.body().data;
+                        if(MyUtil.user_current.getUser_id() !=null){
                         intent.putExtra(USER, newUser);
                         setResult(RESULT_OK, intent);
+//                        intent.putExtra(USER, newUser);
 //                        startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập", Toast.LENGTH_SHORT).show();
+                        username.setError("Vui lòng kiểm tra lại tài khoan");
                         password.setError("Vui lòng kiểm tra lại mật khẩu");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Root<User>> call, Throwable t) {
-                    Toast.makeText(LoginActivity.this, "Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập", Toast.LENGTH_SHORT).show();
-                    password.setError("Vui lòng kiểm tra lại mật khẩu");
+                    Toast.makeText(LoginActivity.this, "Lỗi hệ thống", Toast.LENGTH_SHORT).show();
                     Log.d("loi", t.getMessage());
                 }
             });

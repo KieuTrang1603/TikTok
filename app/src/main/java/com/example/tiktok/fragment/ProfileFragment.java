@@ -497,6 +497,7 @@ public class ProfileFragment extends Fragment {
                     if (response.isSuccessful()) {
 //                    User user = MainActivity.getCurrentUser();
                         MyUtil.user_current = response.body().data;
+                        MainActivity.setCurrent(MyUtil.user_current);
 //                        ((MainActivity) requireActivity()).setCurrentUser(MyUtil.user_current);
 //                    MainActivity.getCurrentUser()=MyUtil.user_current;
                         String imgURL = RetrofitClient.getBaseUrl() + "/api/file/image/view?fileName=" + MyUtil.user_current.getAvatar();

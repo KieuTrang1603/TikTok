@@ -77,8 +77,8 @@ public class RegisterActivity extends AppCompatActivity {
 //                    newUser = response.body().data;
 //                    Log.d(TAG, "onResponse: " + newUser);
                     MyUtil.user_current = response.body().data;
-                    intent.putExtra(USER, newUser);
-                    setResult(RESULT_OK, intent);
+//                    intent.putExtra(USER, MyUtil.user_current);
+//                    setResult(RESULT_OK, intent);
                     startActivity(intent);
                     finish();
                 } else {

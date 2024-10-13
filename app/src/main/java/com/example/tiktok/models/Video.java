@@ -8,9 +8,11 @@ import com.example.tiktok.MainActivity;
 import com.example.tiktok.utils.MyUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Video implements Serializable {
     // TAG
@@ -160,6 +162,35 @@ public class Video implements Serializable {
     // Like
     public boolean isLiked() {
         return likes != null && likes.contains(MainActivity.getCurrentUser().getUser_id());
+    }
+
+    public void addlike(String user_id) {
+        // Add to followings
+        if (likes == null) likes = new ArrayList<>();
+        likes.add(user_id);
+
+        // Update numFollowing
+        num_like++;
+    }
+    public void unlike(String user_id) {
+        // Remove from followings
+        if (likes != null) likes.remove(user_id);
+
+        // Update numFollowing
+        num_like--;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Video video = (Video) o;
+        return video_id.equals(video.video_id); // So sánh dựa trên videoId
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(video_id);
     }
 }
 

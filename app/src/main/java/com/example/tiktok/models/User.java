@@ -156,4 +156,11 @@ public class User implements Serializable {
         // Update numFollowing
         num_following++;
     }
+    public void unfollow(String user_id) {
+        // Remove from followings
+        if (followings != null) followings.remove(user_id);
+
+        // Update numFollowing
+        num_following--;
+    }
 }

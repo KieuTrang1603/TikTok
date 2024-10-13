@@ -121,16 +121,26 @@ public class VideoFragment extends Fragment {
 
     // Hàm này sẽ chỉ thêm một video mới vào danh sách đã có
     public void addNewVideo(Video newVideo) {
-        // Thêm video mới vào danh sách hiện tại
-        videos.add(newVideo);
-        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-        adapter.setVideos(videos);
+        if (videos.add(newVideo)) { // Kiểm tra nếu video đã được xóa thành công
+            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+            adapter.setVideos(videos);
+            adapter.notifyDataSetChanged(); // Thông báo dữ liệu đã thay đổi
+        } else {
+            Log.d("addVideo", "Không thể them video.");
+        }
     }
 
     public void deleteVideo(Video newVideo) {
-        // Thêm video mới vào danh sách hiện tại
-        videos.remove(newVideo);
-        VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-        adapter.setVideos(videos);
+
+        if (videos.remove(newVideo)) { // Kiểm tra nếu video đã được xóa thành công
+            VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
+            adapter.setVideos(videos);
+            adapter.notifyDataSetChanged(); // Thông báo dữ liệu đã thay đổi
+        } else {
+            Log.d("deleteVideo", "Không thể xóa video: video không tồn tại trong danh sách.");
+        }
+    }
+    public void reloadData(){
+        updateUI();
     }
 }

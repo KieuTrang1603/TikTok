@@ -138,9 +138,9 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         }
         updateUI(holder, video,position);
 
-        holder.itemView.setOnClickListener(v -> {
-            handleItemClick(holder, video, position);
-        });
+//        holder.itemView.setOnClickListener(v -> {
+//            handleItemClick(holder, video, position);
+//        });
 
         boolean isLoaded = false;
         if (isVideoInitiated.containsKey(video.getVideo_id())) {
@@ -305,7 +305,7 @@ public class VideoFragmentAdapter extends RecyclerView.Adapter<VideoFragmentAdap
         activity.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_comment_container, commentFragment)
-                .commit();
+                .commitAllowingStateLoss();
 
         // Show layout_comment
         activity.findViewById(R.id.fragment_comment_container).setVisibility(View.VISIBLE);

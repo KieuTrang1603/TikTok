@@ -162,7 +162,7 @@
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
                                 android:text="@string/likes"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/txt_num_likes" />
@@ -200,7 +200,7 @@
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
                                 android:text="@string/followers"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/txt_num_followers" />
@@ -238,7 +238,7 @@
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
                                 android:text="@string/following"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/txt_num_following" />

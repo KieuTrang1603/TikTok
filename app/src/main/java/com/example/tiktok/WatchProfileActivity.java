@@ -90,11 +90,13 @@ public class WatchProfileActivity extends AppCompatActivity {
                             int follower = user.getNum_followers();
                             user.setNum_followers(follower - 1);
                             updateUI(user);
+                            MyUtil.user_current.unfollow(user.getUser_id());
                         }
                         else {
                             int follower = user.getNum_followers();
                             user.setNum_followers(follower + 1);
                             updateUI(user);
+                            MyUtil.user_current.follow(user.getUser_id());
                         }
 //                        MainActivity.setCurrent(user1);
                     }
