@@ -69,15 +69,15 @@ public class MainActivity extends FragmentActivity {
     public static void setCurrent(User user){
         currentUser=user;
     }
-    public void setCurrentUser(User user) {
+    public void setCurrentUser(User user, boolean isUpdate) {
         if (user != null) {
             currentUser = user;
             Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
-            updateUI();
+            updateUI(isUpdate);
             }
         else {
             currentUser = null;
-            updateUI();
+            updateUI(isUpdate);
             Log.i(TAG, "setCurrentUser: logged out");
         }
     }
@@ -91,7 +91,7 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         User user = MyUtil.user_current;
         if (user.getUser_id() != null) {
-            setCurrentUser(user);
+            setCurrentUser(user, false);
         }
     }
     protected void onStart() {
@@ -116,11 +116,11 @@ public class MainActivity extends FragmentActivity {
         //Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
         User user = MyUtil.user_current;
         if (user.getUser_id() != null){
-            setCurrentUser(user);
+            setCurrentUser(user, false);
         }
     }
-    public void updateUI() {
-        VideoFragment.getInstance().updateUI();
+    public void updateUI(boolean isUpdate) {
+        VideoFragment.getInstance().loadVideos();
         ProfileFragment.getInstance().updateUI();
         //NotificationFragment.getInstance().updateUI();
     }
@@ -144,9 +144,10 @@ public class MainActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     User user = (User) data.getSerializableExtra(LoginActivity.USER);
-                    setCurrentUser(user);
+                    setCurrentUser(user, true);
                     changeNavItem(0);
                     Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
                 }
             } else {
                 if (data != null && data.getBooleanExtra(EXTRA_REGISTER, false)) {
@@ -159,7 +160,7 @@ public class MainActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     User user = (User) data.getSerializableExtra(RegisterActivity.USER);
-                    setCurrentUser(user);
+                    setCurrentUser(user, false);
                     changeNavItem(0);
                     Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -180,7 +181,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         init();
 //        getUser();
@@ -309,7 +310,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void logOut() {
-        setCurrentUser(null);
+        setCurrentUser(null, false);
         MyUtil.user_current=null;
         changeNavItem(0);
     }

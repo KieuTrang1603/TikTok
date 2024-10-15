@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "onResponse: " + response.body().data);
                         MyUtil.user_current = response.body().data;
                         if(MyUtil.user_current.getUser_id() !=null){
-                        intent.putExtra(USER, newUser);
+                        intent.putExtra(USER, MyUtil.user_current);
                         setResult(RESULT_OK, intent);
 //                        intent.putExtra(USER, newUser);
 //                        startActivity(intent);

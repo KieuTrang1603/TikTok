@@ -46,7 +46,7 @@ public class CommentFragmentAdapter extends RecyclerView.Adapter<CommentFragment
         Context context;
         private final List<Comment> comments;
         PopupMenu popupMenu;
-        final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
+//        final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
 	    public CommentFragmentAdapter(List<Comment> comments, Context context) {
             this.comments = comments;
             this.context = context;

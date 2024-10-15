@@ -76,7 +76,7 @@ public class VideoFragment extends Fragment {
         return view;
     }
 
-    private void loadVideos() {
+    public void loadVideos() {
         apitiktok.getAllVideo(null,null, null, null).enqueue(new Callback<Root<Data<Video>>>() {
             @Override
             public void onResponse(Call<Root<Data<Video>>> call, Response<Root<Data<Video>>> response) {
@@ -85,7 +85,8 @@ public class VideoFragment extends Fragment {
                     videos = listVideos;
                     VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
                     if (adapter != null) {
-                        adapter.setVideos(listVideos);
+                        adapter = new VideoFragmentAdapter(listVideos, context);
+                        recyclerView.setAdapter(adapter);
                     } else {
                         adapter = new VideoFragmentAdapter(listVideos, context);
                         recyclerView.setAdapter(adapter);
@@ -98,10 +99,10 @@ public class VideoFragment extends Fragment {
             }
         });
 }
-    public void updateUI() {
+    public void updateUI(boolean isUpdate) {
         if (recyclerView.getAdapter() != null) {
             VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-            adapter.setVideos(adapter.getVideos());
+            adapter.setVideos(adapter.getVideos(), isUpdate);
         }
     }
     public void pauseVideo() {
@@ -123,7 +124,7 @@ public class VideoFragment extends Fragment {
     public void addNewVideo(Video newVideo) {
         if (videos.add(newVideo)) { // Kiểm tra nếu video đã được xóa thành công
             VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-            adapter.setVideos(videos);
+            adapter.setVideos(videos, false);
             adapter.notifyDataSetChanged(); // Thông báo dữ liệu đã thay đổi
         } else {
             Log.d("addVideo", "Không thể them video.");
@@ -134,13 +135,13 @@ public class VideoFragment extends Fragment {
 
         if (videos.remove(newVideo)) { // Kiểm tra nếu video đã được xóa thành công
             VideoFragmentAdapter adapter = (VideoFragmentAdapter) recyclerView.getAdapter();
-            adapter.setVideos(videos);
+            adapter.setVideos(videos, false);
             adapter.notifyDataSetChanged(); // Thông báo dữ liệu đã thay đổi
         } else {
             Log.d("deleteVideo", "Không thể xóa video: video không tồn tại trong danh sách.");
         }
     }
     public void reloadData(){
-        updateUI();
+        updateUI(true);
     }
 }
