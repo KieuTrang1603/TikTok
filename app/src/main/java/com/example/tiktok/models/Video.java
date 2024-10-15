@@ -1,10 +1,12 @@
 package com.example.tiktok.models;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.example.tiktok.MainActivity;
+import com.example.tiktok.R;
 import com.example.tiktok.utils.MyUtil;
 
 import java.io.Serializable;
@@ -26,6 +28,8 @@ public class Video implements Serializable {
     private List<String> likes;
     private List<String> comments;
     String username, avatar;
+    boolean isLike =false;
+    int typeUser = 0; // 0 chưa fl, 1 đã fl, 2 người dùng hiện tại
 
     public Video() {
 //        likes = new HashMap<>();
@@ -43,6 +47,7 @@ public class Video implements Serializable {
         this.num_views = num_views;
         this.date_uploaded = date_uploaded;
         this.likes = likes;
+
     }
 
     public String getVideo_id() {
@@ -141,6 +146,32 @@ public class Video implements Serializable {
         this.avatar = avatar;
     }
 
+    public boolean isLike() {
+        return isLike;
+    }
+
+    public void setLike(boolean like) {
+        isLike = like;
+    }
+
+    public int getTypeUser() {
+        if (!MainActivity.isLoggedIn() || MainActivity.getCurrentUser().getUser_id().equals((user_id))) {
+            typeUser = 2;
+        } else {
+            Log.d("Nguoi dung hien tại", MainActivity.getCurrentUser().toString());
+            if (MainActivity.getCurrentUser().isFollowing(user_id)) {
+                typeUser = 1;
+            } else {
+                typeUser = 0;
+            }
+        }
+        return typeUser;
+    }
+
+    public void setTypeUser(int typeUser) {
+        this.typeUser = typeUser;
+    }
+
     @Override
     public String toString() {
         return "Video{" +
@@ -178,6 +209,21 @@ public class Video implements Serializable {
 
         // Update numFollowing
         num_like--;
+    }
+    public void addComment(Comment comment) {
+        if (comments == null)
+            comments = new ArrayList<>();
+
+        comments.add(comment.getComment_id());
+        num_comments++;
+    }
+    public void removeComment(Comment comment) {
+        if (comments != null && comments.contains(comment.getComment_id())) {
+            comments.remove(comment.getComment_id());
+            num_comments--;
+        }
+        Log.i(TAG, "removeComment: " + comment.getComment_id());
+        Log.i(TAG, "removeComment: " + comments.toString());
     }
 
     @Override

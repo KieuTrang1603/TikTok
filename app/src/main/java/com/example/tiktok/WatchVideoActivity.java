@@ -64,11 +64,11 @@ public class WatchVideoActivity extends FragmentActivity {
         recyclerView = findViewById(R.id.recycler_view_videos);
 
         ImageView img_avatar = findViewById(R.id.img_avatar);
-
+        String imgURL = RetrofitClient.getBaseUrl() + "/api/file/image/view?fileName=" + MyUtil.user_current.getAvatar();
         try {
             if (MainActivity.isLoggedIn())
                 Glide.with(this)
-                        .load(MainActivity.getCurrentUser().getAvatar())
+                        .load(imgURL)
                         .error(R.drawable.default_avatar)
                         .into(img_avatar);
             else

@@ -115,7 +115,7 @@ public class SearchFragmentAdapter extends RecyclerView.Adapter<SearchFragmentAd
                     holder.btn_follow.setEnabled(false);
                     holder.btn_follow.setVisibility(View.GONE);
                     User user1=response.body().data;
-                    holder.txt_number_follow.setText(String.valueOf(user1.getNum_followers()));
+                    holder.txt_number_follow.setText(String.valueOf(user.getNum_followers() + 1));
                     MyUtil.user_current.follow(user.getUser_id());
                     Toast.makeText(context, "Đã theo dõi " + user.getUsername(), Toast.LENGTH_SHORT).show();
                 }

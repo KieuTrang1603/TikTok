@@ -1,8 +1,10 @@
 package com.example.tiktok.models;
 
 import com.example.tiktok.utils.MyUtil;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class Notification {
     public static final String TYPE_FOLLOW = "follow";
@@ -26,6 +28,16 @@ public class Notification {
     public Notification() {
     }
 
+    public Notification(DataSnapshot dataSnapshot) {
+        HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
+        this.notification_id = dataSnapshot.getKey();
+        this.user_id = (String) data.get("username");
+        this.content = (String) data.get("content");
+        this.type_notification = (String) data.get("type");
+        this.time = (String) data.get("time");
+        this.redirectTo = (String) data.get("redirectTo");
+        this.seen = (Boolean) data.get("seen");
+    }
     public String getNotification_id() {
         return notification_id;
     }

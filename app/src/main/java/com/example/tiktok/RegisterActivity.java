@@ -74,12 +74,10 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<Root<User>> call, Response<Root<User>> response) {
                 Log.d(TAG, "onResponse: " + response.body().data);
                 if (response.isSuccessful()) {
-//                    newUser = response.body().data;
-//                    Log.d(TAG, "onResponse: " + newUser);
                     MyUtil.user_current = response.body().data;
-//                    intent.putExtra(USER, MyUtil.user_current);
-//                    setResult(RESULT_OK, intent);
-                    startActivity(intent);
+                    intent.putExtra(USER, MyUtil.user_current);
+                    setResult(RESULT_OK, intent);
+//                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Authentication failed.",

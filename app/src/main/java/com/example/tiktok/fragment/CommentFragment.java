@@ -58,6 +58,7 @@ public class CommentFragment extends Fragment {
     static String commentId;
     final ApiInterface apitiktok = RetrofitClient.getInstance().create(ApiInterface.class);
     private static final List<CommentFragment> instances = new ArrayList<>();
+    EditText txt_comment_input;
 
     private CommentFragment(Video video, Context context) {
         this.video = video;
@@ -85,6 +86,7 @@ public class CommentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,7 +127,7 @@ public class CommentFragment extends Fragment {
             Log.w(TAG, "Glide error: " + e.getMessage());
         }
 
-        EditText txt_comment_input = view.findViewById(R.id.txt_comment_input);
+        txt_comment_input = view.findViewById(R.id.txt_comment_input);
         ImageView ic_send_comment = view.findViewById(R.id.ic_send_comment);
         txt_comment_input.addTextChangedListener(new TextWatcher() {
             @Override
@@ -286,6 +288,16 @@ public class CommentFragment extends Fragment {
 //                );
 //            });
 //        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (MainActivity.isLoggedIn()) {
+            txt_comment_input.setEnabled(true);
+            txt_comment_input.setHint("Nhập...");
+        }
     }
 
     public void scrollToComment(String commentId) {

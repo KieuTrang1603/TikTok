@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -42,6 +43,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -59,4 +61,10 @@ dependencies {
     implementation ("np.com.susanthapa:curved_bottom_navigation:0.6.5")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
     implementation ("com.squareup.okhttp3:okhttp-urlconnection:4.9.1")
+
+    //exoplayer
+    implementation ("com.google.android.exoplayer:exoplayer:2.18.1")
+
+    //refresh
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

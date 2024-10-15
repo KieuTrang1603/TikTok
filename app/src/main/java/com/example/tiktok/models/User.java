@@ -14,6 +14,7 @@ public class User implements Serializable {
     private String user_id,username, fullName, phoneNumber, email,password, avatar, role;
     private int num_followers, num_following, num_like;
     private List<String> followings, followers;
+    private boolean isFollow=false;
 
     public User(String username, String fullName, String phoneNumber, String email,String password, String avatar, String user_id, int num_followers, int num_following, int num_like, List<String> followings, List<String> followers) {
         this.username = username;
@@ -28,6 +29,7 @@ public class User implements Serializable {
         this.num_like = num_like;
         this.followings = followings;
         this.followers = followers;
+
     }
 
     public User() {
@@ -126,6 +128,14 @@ public class User implements Serializable {
 
     public boolean isAdmin() {
         return role.equals(ROLE_ADMIN);
+    }
+
+    public boolean isFollow() {
+        return isFollow;
+    }
+
+    public void setFollow(boolean follow) {
+        isFollow = follow;
     }
 
     public void setFollowers(List<String> followers) {

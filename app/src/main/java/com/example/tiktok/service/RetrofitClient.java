@@ -23,8 +23,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static retrofit2.Retrofit instance;
-    static String baseUrl = "https://nodejs-mysql-1sml.onrender.com";
-//        static String baseUrl = "https://662b-2405-4803-f4f1-6820-d5c7-907a-8f21-e998.ngrok-free.app";
+    static String baseUrl = "https://brown-needles-agree.loca.lt";
+//        static String baseUrl = "https://96b3-2402-800-6d3c-fdc5-1562-8e32-c6c-e5bb.ngrok-free.app";
     public static retrofit2.Retrofit getInstance(){
         if(instance == null){
             instance = new retrofit2.Retrofit.Builder()

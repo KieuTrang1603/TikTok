@@ -289,34 +289,43 @@ public class ProfileFragment extends Fragment {
         }
         // Tạo RequestBody cho file
         RequestBody requestFile = RequestBody.create(MediaType.parse("video/*"), file);
-
+        Log.d("Filename", file.getName());
         // Tạo MultipartBody.Part từ file
-        MultipartBody.Part body = MultipartBody.Part.createFormData("videoFile", file.getName(), requestFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
-        // Gọi API để upload video
-        apitiktok.uploadVideo(body).enqueue(new Callback<UploadResponse>() {
-            @Override
-            public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
-                if (response.isSuccessful()) {
+        if (file.getName() != null) {
+            // Progress bar
+            final ProgressDialog progressDialog = new ProgressDialog(requireContext());
+            progressDialog.setTitle("Đang đăng video");
+            progressDialog.setMessage("Vui lòng chờ...");
+            progressDialog.show();
+            // Gọi API để upload video
+            apitiktok.uploadVideo(body).enqueue(new Callback<UploadResponse>() {
+                @Override
+                public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
+                    if (response.isSuccessful()) {
 //                    Log.e(TAG, "Upload thành công111111: " + response.body());
-                    video.setFileName(response.body().getData());
-//                    Log.e(TAG, video.getFileName());
-                } else {
-                    try {
-                        Log.e(TAG, "Upload thất bại: " + response.errorBody().string());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        video.setFileName(response.body().getData());
+                        Log.e(TAG, video.getFileName());
+                        Log.d(TAG, "Upload video thành công: " + response.body());
+                    } else {
+                        try {
+                            Log.e(TAG, "Upload video thất bại: " + response.errorBody().string());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+                    progressDialog.dismiss();
                 }
-                Log.d(TAG, "Upload thành công: " + response.body());
-            }
 
-            @Override
-            public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
-                Log.d(TAG, "Upload thất bại: " + t);
-            }
-        });
-//
+                @Override
+                public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
+                    Log.d(TAG, "Upload video thất bại: " + t);
+                    Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            });
+        }
     }
 
     public File getFileFromUri(Uri contentUri) throws IOException, FileNotFoundException {
@@ -361,13 +370,6 @@ public class ProfileFragment extends Fragment {
         } catch (Exception e) {
 
         }
-
-//        String mimeType = "";
-//        if (imageFilePath.endsWith(".jpg") || imageFilePath.endsWith(".jpeg")) {
-//            mimeType = "image/jpeg";
-//        } else if (imageFilePath.endsWith(".png")) {
-//            mimeType = "image/png";
-//        }
         // Tạo RequestBody cho file
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
 
@@ -376,23 +378,30 @@ public class ProfileFragment extends Fragment {
 
         // Gọi API để upload video
         //User user = MainActivity.getCurrentUser();
-        apitiktok.uploadImage(body).enqueue(new Callback<UploadResponse>() {
-            @Override
-            public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Upload thành công: " + response.body());
-                    uploadAvatar(MyUtil.user_current,response.body().getData());
-//                    progressDialog.dismiss();
+        if (file.getName() != null) {
+            // Progress bar
+            final ProgressDialog progressDialog = new ProgressDialog(requireContext());
+            progressDialog.setTitle("Đang đăng video");
+            progressDialog.setMessage("Vui lòng chờ...");
+            progressDialog.show();
+            apitiktok.uploadImage(body).enqueue(new Callback<UploadResponse>() {
+                @Override
+                public void onResponse(retrofit2.Call<UploadResponse> call, Response<UploadResponse> response) {
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "Upload image thành công: " + response.body());
+                        uploadAvatar(MyUtil.user_current, response.body().getData());
                     }
-            }
+                    progressDialog.dismiss();
+                }
 
-            @Override
-            public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
-                Log.d(TAG, "Upload thất bại: " + t);
-                Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-//                progressDialog.dismiss();
-            }
-        });
+                @Override
+                public void onFailure(retrofit2.Call<UploadResponse> call, Throwable t) {
+                    Log.d(TAG, "Upload image thất bại: " + t);
+                    Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            });
+        }
     }
 
     private void handlePostVideo() {
@@ -441,11 +450,14 @@ public class ProfileFragment extends Fragment {
             progressDialog.setTitle("Đang đăng video");
             progressDialog.setMessage("Vui lòng chờ...");
             progressDialog.show();
+            Log.d("Filename", fileName);
+            Log.d("User_id", user_id);
+            Log.d("Content", content);
             apitiktok.addvideo(content, fileName, user_id).enqueue(new Callback<Root<Video>>() {
                 @Override
                 public void onResponse(Call<Root<Video>> call, Response<Root<Video>> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        Log.d(TAG, "Upload thành công: " + response.body());
+                        Log.d(TAG, "Post video thành công: " + response.body());
                         Video video1 = new Video();
                         video1 = response.body().data;
                         VideoFragment videoFragment = (VideoFragment) getParentFragmentManager().findFragmentByTag("VideoFragment");
@@ -467,7 +479,7 @@ public class ProfileFragment extends Fragment {
                         }
                     } else {
                         // Xử lý khi response không thành công, ví dụ: mã lỗi 400, 500
-                        Log.d(TAG, "Upload thất bại: " + response.errorBody());
+                        Log.d(TAG, "Post video thất bại: " + response.errorBody());
                         Toast.makeText(context, "Đăng video thất bại: " + response.message(), Toast.LENGTH_SHORT).show();
                     }
                     // Đảm bảo ProgressDialog luôn được ẩn sau khi có phản hồi
@@ -476,7 +488,7 @@ public class ProfileFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<Root<Video>> call, Throwable t) {
-                    Log.d(TAG, "Upload thất bại: " + t.getMessage());
+                    Log.d(TAG, "Post video thất bại: " + t.getMessage());
                     Toast.makeText(context, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
                     // Ẩn ProgressDialog ngay cả khi yêu cầu thất bại
                     progressDialog.dismiss();

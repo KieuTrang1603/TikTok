@@ -37,6 +37,10 @@ import com.example.tiktok.service.ApiInterface;
 import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.KeyboardUtil;
 import com.example.tiktok.utils.MyUtil;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 import kotlin.Unit;
 import np.com.susanthapa.curved_bottom_navigation.CbnMenuItem;
@@ -69,15 +73,15 @@ public class MainActivity extends FragmentActivity {
     public static void setCurrent(User user){
         currentUser=user;
     }
-    public void setCurrentUser(User user) {
+    public void setCurrentUser(User user, boolean isUpdate) {
         if (user != null) {
             currentUser = user;
             Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
-            updateUI();
+            updateUI(isUpdate);
             }
         else {
             currentUser = null;
-            updateUI();
+            updateUI(isUpdate);
             Log.i(TAG, "setCurrentUser: logged out");
         }
     }
@@ -91,7 +95,7 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         User user = MyUtil.user_current;
         if (user.getUser_id() != null) {
-            setCurrentUser(user);
+            setCurrentUser(user, false);
         }
     }
     protected void onStart() {
@@ -101,26 +105,13 @@ public class MainActivity extends FragmentActivity {
         } else {
             MyUtil.setLightStatusBar(this);
         }
-//        if (MyUtil.user_current != null){
-//            User user = new User();
-//            user.setUser_id(MyUtil.user_current.getUser_id());
-////            User user = MyUtil.user_current;
-//            setCurrentUser(user);
-//        }
-//        User user = new User();
-//        user.setUser_id(MyUtil.user_current.getUser_id());
-//        setCurrentUser(user);
-//        Log.d(TAG, "setCurrentUser: " + MyUtil.user_current.getUser_id());
-//        Intent intent = getIntent();
-//        User currentUser = (User) intent.getSerializableExtra("USER");
-        //Log.d(TAG, "setCurrentUser: " + currentUser.getUser_id());
         User user = MyUtil.user_current;
         if (user.getUser_id() != null){
-            setCurrentUser(user);
+            setCurrentUser(user, false);
         }
     }
-    public void updateUI() {
-        VideoFragment.getInstance().updateUI();
+    public void updateUI(boolean isUpdate) {
+        VideoFragment.getInstance().loadVideos();
         ProfileFragment.getInstance().updateUI();
         //NotificationFragment.getInstance().updateUI();
     }
@@ -144,7 +135,7 @@ public class MainActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     User user = (User) data.getSerializableExtra(LoginActivity.USER);
-                    setCurrentUser(user);
+                    setCurrentUser(user, true);
                     changeNavItem(0);
                     Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -159,7 +150,7 @@ public class MainActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     User user = (User) data.getSerializableExtra(RegisterActivity.USER);
-                    setCurrentUser(user);
+                    setCurrentUser(user, false);
                     changeNavItem(0);
                     Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -180,10 +171,24 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+//        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         init();
-//        getUser();
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("TABLE_NOTIFICATIONS");
+//
+//        String notificationId = myRef.push().getKey(); // Tạo một ID duy nhất
+//        HashMap<String, Object> notificationData = new HashMap<>();
+//        notificationData.put("content", "Bạn có một lượt thích mới");
+//        notificationData.put("notificationId", notificationId);
+//        notificationData.put("redirectTo", "videoId123");
+//        notificationData.put("seen", false);
+//        notificationData.put("time", System.currentTimeMillis());
+//        notificationData.put("type", "like");
+//        notificationData.put("userId", "userId123");
+//
+//        myRef.child(notificationId).setValue(notificationData);
+//        Log.d("Notifi",notificationData.toString());
     }
     private void init() {
         if (nav == null) {
@@ -309,7 +314,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void logOut() {
-        setCurrentUser(null);
+        setCurrentUser(null, false);
         MyUtil.user_current=null;
         changeNavItem(0);
     }

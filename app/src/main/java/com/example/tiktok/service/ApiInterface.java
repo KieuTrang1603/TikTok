@@ -144,7 +144,7 @@ public interface ApiInterface {
     Call<UploadResponse> uploadImage(@Part MultipartBody.Part file);
 
     @Multipart
-    @POST("api/file/video/single")
+    @POST("api/file/video/single-hls")
     Call<UploadResponse> uploadVideo(@Part MultipartBody.Part video);
 
     @FormUrlEncoded

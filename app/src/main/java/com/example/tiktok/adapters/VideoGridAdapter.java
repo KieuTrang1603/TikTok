@@ -5,6 +5,8 @@ import static androidx.core.content.ContentProviderCompat.requireContext;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,8 @@ import com.example.tiktok.service.ApiInterface;
 import com.example.tiktok.service.RetrofitClient;
 import com.example.tiktok.utils.MyUtil;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,14 +68,33 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         holder.txt_delete_video.setOnClickListener(v -> handleDeleteVideo(video, position));
     }
 
+    private Bitmap getVideoThumbnail(String videoUrl) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(videoUrl, new HashMap<>());
+            // Trích xuất frame tại thời điểm 1 giây (1000000 micro giây)
+            Bitmap bitmap = retriever.getFrameAtTime(1000000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                retriever.release();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
     private void updateView(ViewHolder holder, Video video) {
         Log.i(TAG, "updateView: " + video.getContent());
         holder.txt_num_likes.setText(String.valueOf(video.getNum_like()));
         holder.txt_num_views.setText(String.valueOf(video.getNum_views()));
-        String videoUrl = RetrofitClient.getBaseUrl() +"/api/file/video/view?fileName=" + video.getFileName();
+        String videoUrl = RetrofitClient.getBaseUrl() + "/api/file/video/view-hls/" + video.getFileName() +"/master.m3u8";
         try {
+            Bitmap thumbnail = getVideoThumbnail(videoUrl);
             Glide.with(context)
-                    .load(videoUrl)
+                    .load(thumbnail)
                     .error(R.drawable.img_404)
                     .into(holder.img_preview);
         } catch (Exception e) {
