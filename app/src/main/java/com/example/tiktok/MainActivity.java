@@ -138,6 +138,7 @@ public class MainActivity extends FragmentActivity {
                     setCurrentUser(user, true);
                     changeNavItem(0);
                     Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
                 }
             } else {
                 if (data != null && data.getBooleanExtra(EXTRA_REGISTER, false)) {
